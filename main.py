@@ -1,18 +1,27 @@
 import sqlite3
 from sqlite3 import Error
 from db_connection import Connection
+from Menu import Menu_Bar
+from tkinter import *
 
 # Este es el principal archivo del proyecto
 def main():
+    root = Tk()
+    root.geometry("800x600")
+    menu = Menu_Bar(root)
+    #registrar_producto()
+    root.mainloop()
+
+
+# Función para registar un nuevo producto en la farmacia
+# @author Luis GP
+# @param {SQLite connection object}
+# @return void
+def registrar_producto():
     db = Connection()
     db.create_connection()
-    
-    registrar_producto(db.conn)
+    connect = db.conn
 
-    db.close_connection()
-
-
-def registrar_producto(coneccion):
     nombre_producto = input("Nombre del producto: ")
     nombre_componente = input("Nombre del componente: ")
     porcion = input("cantidad de porcion: ")
@@ -22,14 +31,33 @@ def registrar_producto(coneccion):
     codigo = input("Codigo de barras: ")
 
 
-    sql = ''' 
-        INSERT INTO productos(nombre_producto, componente, porcion, tipo_porcion, requiere_receta, precio, codigo)
-        VALUES('{}', '{}', '{}', '{}', '{}', '{}', '{}')
-    '''.format(nombre_producto, nombre_componente, porcion, tipo_porcion, requiere_reseta, precio, codigo)
+    sql = f''' 
+        INSERT INTO 
+        productos(
+            nombre_producto, 
+            componente, 
+            porcion, 
+            tipo_porcion, 
+            requiere_receta, 
+            precio, 
+            codigo
+        )
+        VALUES(
+            '{nombre_producto}', 
+            '{nombre_componente}', 
+            '{porcion}', 
+            '{tipo_porcion}', 
+            '{requiere_reseta}', 
+            '{precio}', 
+            '{codigo}'
+        )
+    '''
 
-    cur = coneccion.cursor()
+    cur = connect.cursor()
     cur.execute(sql)
-    coneccion.commit()
+    connect.commit()
+
+    db.close_connection()
 
 
 if __name__ == "__main__":
