@@ -16,16 +16,25 @@ def main():
     width = root.winfo_width()
     height = root.winfo_height() - 25
 
-    # Frame lateral 
-    lateral = Frame(root)
-    lateral.grid(row=1, column=1, rowspan=10, columnspan=2)
-    lateral.config(bg="lightblue", relief="groove", bd=3, cursor="") 
-    panel_inicio = Inicio(lateral, 200, height)
-    for i in range(50):
-        b = Button(panel_inicio.f, text=f"Boton {i}")
-        b.pack(fill=X, expand = True)
+    root.rowconfigure(0, weight=1)
+    root.columnconfigure(0, weight=1)
 
-    panel_inicio.update()
+    # Frame lateral 
+    lateral = Frame(root, bg="blue")
+    lateral.grid(row=0, column=0, rowspan=30, columnspan=15)
+    lateral.config(bg="lightblue", relief="groove", bd=3, cursor="") 
+    caja = Inicio(lateral)
+
+
+    for i in range(50):
+        Button(caja.frame, text=f"Boton {i}").pack(fill=X, expand = True)
+
+    f = Frame(root, bg="red")
+    f.grid(row=0, column=16, rowspan=30, columnspan=30)
+
+    Button(f, text="Prueba").pack(fill=BOTH, expand=TRUE)
+    
+
     # Menu
     menu = Menu_Bar(root)
     #registrar_producto()
