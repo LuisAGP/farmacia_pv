@@ -11,26 +11,31 @@ def main():
     root = Tk()
     root.wm_state("zoomed")
     root.update()
+    root.columnconfigure(0, weight=0)
+    root.rowconfigure(0, weight=0)
 
     # Alto y Ancho de la ventana principal (Pantalla completa)
     width = root.winfo_width()
     height = root.winfo_height() - 25
 
-    # Frame lateral 
-    lateral = Frame(root, bg="blue", width=200)
-    lateral.grid(row=0, column=0, rowspan=10, columnspan=3)
-    lateral.config(bg="lightblue", relief="groove", bd=3, cursor="") 
-    caja = Inicio(lateral)
+    # Frame lateral  
+    caja = Inicio(root, width=300, height=height)
 
+    Label(caja.frame, text=f"Width: {caja.get_width()}").pack()
+    Label(caja.frame, text=f"Height: {caja.get_height()}").pack()
+    Button(root, text="Eliminar panel izquierdo", command=caja.destroy).pack(side=LEFT)
+    Button(root, text="Agregar panel izquierdo", command=lambda: Inicio(root, width=300, height=height)).pack(side=LEFT)
 
     for i in range(50):
-        Button(caja.frame, text=f"Boton {i}").pack(fill=X, expand = True)
+        btn = Button(caja.frame, text=f"Boton {i}")
+        btn.pack(fill=X, expand=TRUE)
+        caja.add_mousevent(btn)
     
-
     # Menu
     menu = Menu_Bar(root)
     #registrar_producto()
     root.mainloop()
+
 
 
 # Función para registar un nuevo producto en la farmacia
