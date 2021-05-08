@@ -1,6 +1,6 @@
 from tkinter import *
 
-class Inicio():
+class Caja():
     def __init__(self, container, width=100, height=100):
         self.root = Frame(container, bg="blue", width=width)
         self.root.pack(side=LEFT)

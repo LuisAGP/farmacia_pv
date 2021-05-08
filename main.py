@@ -2,7 +2,7 @@ import sqlite3
 from sqlite3 import Error
 from db_connection import Connection
 from Menu import Menu_Bar
-from Vista_Inicio import Inicio
+from Vistas.Vista_Caja import Caja
 from tkinter import *
 
 # Este es el principal archivo del proyecto
@@ -19,12 +19,12 @@ def main():
     height = root.winfo_height() - 25
 
     # Frame lateral  
-    caja = Inicio(root, width=300, height=height)
+    caja = Caja(root, width=300, height=height)
 
     Label(caja.frame, text=f"Width: {caja.get_width()}").pack()
     Label(caja.frame, text=f"Height: {caja.get_height()}").pack()
     Button(root, text="Eliminar panel izquierdo", command=caja.destroy).pack(side=LEFT)
-    Button(root, text="Agregar panel izquierdo", command=lambda: Inicio(root, width=300, height=height)).pack(side=LEFT)
+    Button(root, text="Agregar panel izquierdo", command=lambda: Caja(root, width=300, height=height)).pack(side=LEFT)
 
     for i in range(50):
         btn = Button(caja.frame, text=f"Boton {i}")
@@ -33,7 +33,7 @@ def main():
     
     # Menu
     menu = Menu_Bar(root)
-    #registrar_producto()
+    # registrar_producto()
     root.mainloop()
 
 
