@@ -19,17 +19,20 @@ def main():
     height = root.winfo_height() - 25
 
     # Frame lateral  
-    caja = Caja(root, width=300, height=height)
+    caja = Caja(root, width=width, height=height)
 
-    Label(caja.frame, text=f"Width: {caja.get_width()}").pack()
-    Label(caja.frame, text=f"Height: {caja.get_height()}").pack()
-    Button(root, text="Eliminar panel izquierdo", command=caja.destroy).pack(side=LEFT)
-    Button(root, text="Agregar panel izquierdo", command=lambda: Caja(root, width=300, height=height)).pack(side=LEFT)
+    Label(caja.frame_barra, text=f"Width: {caja.get_width_barra()}").pack()
+    Label(caja.frame_barra, text=f"Height: {caja.get_height_barra()}").pack()
 
-    for i in range(50):
-        btn = Button(caja.frame, text=f"Boton {i}")
+    Label(caja.frame_caja, text=f"Width: {caja.get_width_caja()}", bg="blue").pack()
+    Label(caja.frame_caja, text=f"Height: {caja.get_height_caja()}", bg="blue").pack()
+
+    for i in range(200):
+        btn = Button(caja.frame_barra, text=f"Boton {i}")
         btn.pack(fill=X, expand=TRUE)
-        caja.add_mousevent(btn)
+        caja.add_mousevent(btn, "B")
+    
+    Button(caja.frame_caja, text="Boton de prueba").pack()
     
     # Menu
     menu = Menu_Bar(root)
