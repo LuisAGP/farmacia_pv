@@ -65,9 +65,12 @@ class Caja():
         self.control.config(bd=3, relief="groove")
         self.control.grid_propagate(False)
 
-        self.pay_button = Button(self.control, text="Pagar")
+        self.pagar_img = PhotoImage(file="Images/pagar.png")
+        self.cancel_img = PhotoImage(file="Images/cancelar.png")
+
+        self.pay_button = Button(self.control, image=self.pagar_img, text="Pagar")
         self.pay_button.grid(row=1, column=1)
-        self.delete_button = Button(self.control, text="Eliminar productos")
+        self.delete_button = Button(self.control, image=self.cancel_img, text="Eliminar productos")
         self.delete_button.grid(row=2, column=1)
         # FIN --------------------------- Control -------------------------------
 
