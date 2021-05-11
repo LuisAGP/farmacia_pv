@@ -56,6 +56,19 @@ class Caja():
         self.frame_caja.bind("<Configure>", lambda e: self.configure_event(e, self.canvas_caja))
         self.frame_caja.bind("<MouseWheel>", lambda e: self.on_mousewheel(e, self.canvas_caja))
         self.canvas_caja.create_window((0, 0), window=self.frame_caja, anchor="nw", width=w_70_s)
+
+        canvas_width = w_70_s
+        lw_30 = int(canvas_width * 0.3)
+        lw_20 = int(canvas_width * 0.2)
+
+        self.desc = Label(self.frame_caja, text="DESCRIPCIÓN",     justify=CENTER, bg="#3481F7", fg="white", font=("Candara", 12, "bold"), bd=1, width=lw_30, relief="solid")
+        self.cant = Label(self.frame_caja, text="CANTIDAD",        justify=CENTER, bg="#3481F7", fg="white", font=("Candara", 12, "bold"), bd=1, width=lw_30, relief="solid")
+        self.preu = Label(self.frame_caja, text="PRECIO UNITARIO", justify=CENTER, bg="#3481F7", fg="white", font=("Candara", 12, "bold"), bd=1, width=lw_20, relief="solid")
+        self.tota = Label(self.frame_caja, text="DESCRIPCIÓN",     justify=CENTER, bg="#3481F7", fg="white", font=("Candara", 12, "bold"), bd=1, width=lw_20, relief="solid")
+        self.desc.grid(row=1, column=1, pady=0)
+        self.cant.grid(row=1, column=2, pady=0)
+        self.preu.grid(row=1, column=3, pady=0)
+        self.tota.grid(row=1, column=4, pady=0)
         # FIN --------------------------- Caja -------------------------------
         
 
@@ -68,10 +81,15 @@ class Caja():
         self.pagar_img = PhotoImage(file="Images/pagar.png")
         self.cancel_img = PhotoImage(file="Images/cancelar.png")
 
-        self.pay_button = Button(self.control, image=self.pagar_img, text="Pagar")
+        self.pay_button = Button(self.control, image=self.pagar_img, text="Pagar", bg="#ABD7F5", bd=0, cursor='hand2')
         self.pay_button.grid(row=1, column=1)
-        self.delete_button = Button(self.control, image=self.cancel_img, text="Eliminar productos")
-        self.delete_button.grid(row=2, column=1)
+        self.delete_button = Button(self.control, image=self.cancel_img, text="Eliminar productos", bd=0, border=0, cursor='hand2')
+        self.delete_button.grid(row=1, column=2)
+
+        pdx = int(w_30 / 2) - self.get_width(self.pay_button) - 10
+        pdy = int(h_20 / 2) - int(self.get_height(self.pay_button) / 2)
+        self.pay_button.grid(padx=(pdx, 10), pady=(pdy, 0))
+        self.delete_button.grid(pady=(pdy, 0))
         # FIN --------------------------- Control -------------------------------
 
 
@@ -80,11 +98,11 @@ class Caja():
         self.total.grid(row=2, column=2)
         self.total.config(bd=3, relief="groove")
         self.total.grid_propagate(False)
-    
-        self.label = Label(self.total, text="TOTAL: ", font=("Arial", 16, "bold"), pady=40)
-        self.label.grid(row=1, column=1)
+        
+        self.label = Label(self.total, text="TOTAL: ", font=("Arial", 16, "bold"))
+        self.label.grid(row=1, column=1, padx=(50, 0), pady=(40, 0))
         self.entry_total = Entry(self.total, justify=CENTER, state="readonly", font=("Helvetica", 14))
-        self.entry_total.grid(row=1, column=2)
+        self.entry_total.grid(row=1, column=2, pady=(40, 0), ipady=2)
 
         self.change_total("$ 1,120.00")
         # FIN --------------------------- Total -------------------------------
@@ -118,6 +136,12 @@ class Caja():
 
     def get_height_caja(self):
         return self.canvas_caja.winfo_reqheight()
+
+    def get_width(self, component):
+        return component.winfo_reqwidth()
+
+    def get_height(self, component):
+        return component.winfo_reqheight()
 
     def change_total(self, txt):
         self.entry_total.config(state=NORMAL)

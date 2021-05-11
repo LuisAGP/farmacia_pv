@@ -20,19 +20,7 @@ def main():
 
     # Frame lateral  
     caja = Caja(root, width=width, height=height)
-
-    Label(caja.frame_barra, text=f"Width: {caja.get_width_barra()}").pack()
-    Label(caja.frame_barra, text=f"Height: {caja.get_height_barra()}").pack()
-
-    Label(caja.frame_caja, text=f"Width: {caja.get_width_caja()}", bg="blue").pack()
-    Label(caja.frame_caja, text=f"Height: {caja.get_height_caja()}", bg="blue").pack()
-
-    for i in range(200):
-        btn = Button(caja.frame_barra, text=f"Boton {i}")
-        btn.pack(fill=X, expand=TRUE)
-        caja.add_mousevent(btn, "B")
     
-    Button(caja.frame_caja, text="Boton de prueba").pack()
     
     # Menu
     menu = Menu_Bar(root)
