@@ -68,9 +68,9 @@ class Caja():
         self.pagar_img = PhotoImage(file="Images/pagar.png")
         self.cancel_img = PhotoImage(file="Images/cancelar.png")
 
-        self.pay_button = Button(self.control, image=self.pagar_img, text="Pagar")
+        self.pay_button = Button(self.control, image=self.pagar_img)
         self.pay_button.grid(row=1, column=1)
-        self.delete_button = Button(self.control, image=self.cancel_img, text="Eliminar productos")
+        self.delete_button = Button(self.control, image=self.cancel_img)
         self.delete_button.grid(row=2, column=1)
         # FIN --------------------------- Control -------------------------------
 
@@ -81,10 +81,10 @@ class Caja():
         self.total.config(bd=3, relief="groove")
         self.total.grid_propagate(False)
     
-        self.label = Label(self.total, text="TOTAL: ", font=("Arial", 16, "bold"), pady=40)
-        self.label.grid(row=1, column=1)
+        self.label = Label(self.total, text="TOTAL: ", font=("Arial", 16, "bold"))
+        self.label.grid(row=1, column=1, padx=(90, 0), pady=(40, 0))
         self.entry_total = Entry(self.total, justify=CENTER, state="readonly", font=("Helvetica", 14))
-        self.entry_total.grid(row=1, column=2)
+        self.entry_total.grid(row=1, column=2, pady=(40, 0), ipady=2)
 
         self.change_total("$ 1,120.00")
         # FIN --------------------------- Total -------------------------------
@@ -93,26 +93,64 @@ class Caja():
 
 
 
-
+    '''
+    Metodo para agregar evento <Configure> para cualquier panel con scroll
+    @author Luis GP
+    @return {function}
+    '''
     def configure_event(self, event, canvas):
         return canvas.configure(scrollregion=canvas.bbox("all"))
 
+
+    '''
+    Metodo para agregar evento <MouseWheel> para cualquier panel con scroll
+    @author Luis GP
+    @return {function}
+    '''
     def on_mousewheel(self, event, canvas):
         canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
         return "break"
 
+
+
+    '''
+    Metodo para agregar evento <MouseWheel> para cualquier elemento que este contenido en un frame con scroll
+    @author Luis GP
+    @return {function}
+    '''
     def add_mousevent(self, component, canvas="b"):
         if canvas.lower() == "b":
             component.bind("<MouseWheel>", lambda e: self.on_mousewheel(e, self.canvas_barra))
         elif canvas.lower() == "c":
             component.bind("<MouseWheel>", lambda e: self.on_mousewheel(e, self.canvas_caja))
 
+
+
+    '''
+    Función para obtener el width del panel lateral de la barra
+    @author Luis GP
+    @return {Float}
+    '''
     def get_width_barra(self):
         return self.canvas_barra.winfo_reqwidth()
     
+
+
+    '''
+    Función para obtener el height del panel lateral de la barra
+    @author Luis GP
+    @return {Float}
+    '''
     def get_height_barra(self):
         return self.canvas_barra.winfo_reqheight()
     
+
+
+    '''
+    Función para obtener el width del panel central de la caja
+    @author Luis GP
+    @return {Float}
+    '''
     def get_width_caja(self):
         return self.canvas_caja.winfo_reqwidth()
 
