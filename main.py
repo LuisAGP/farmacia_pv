@@ -21,7 +21,7 @@ def main():
     # Frame lateral  
     caja = Caja(root, width=width, height=height)
     
-    
+    caja.add_productos_lateral()
     # Menu
     menu = Menu_Bar(root)
     # registrar_producto()
