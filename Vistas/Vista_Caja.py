@@ -64,7 +64,7 @@ class Caja():
         self.desc = Label(self.frame_caja, text="DESCRIPCIÓN",     justify=CENTER, bg="#3481F7", fg="white", font=("Candara", 12, "bold"), bd=1, width=lw_30, relief="solid")
         self.cant = Label(self.frame_caja, text="CANTIDAD",        justify=CENTER, bg="#3481F7", fg="white", font=("Candara", 12, "bold"), bd=1, width=lw_30, relief="solid")
         self.preu = Label(self.frame_caja, text="PRECIO UNITARIO", justify=CENTER, bg="#3481F7", fg="white", font=("Candara", 12, "bold"), bd=1, width=lw_20, relief="solid")
-        self.tota = Label(self.frame_caja, text="DESCRIPCIÓN",     justify=CENTER, bg="#3481F7", fg="white", font=("Candara", 12, "bold"), bd=1, width=lw_20, relief="solid")
+        self.tota = Label(self.frame_caja, text="TOTAL",     justify=CENTER, bg="#3481F7", fg="white", font=("Candara", 12, "bold"), bd=1, width=lw_20, relief="solid")
         self.desc.grid(row=1, column=1, pady=0)
         self.cant.grid(row=1, column=2, pady=0)
         self.preu.grid(row=1, column=3, pady=0)
