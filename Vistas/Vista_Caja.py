@@ -1,4 +1,5 @@
 from tkinter import *
+from PIL import Image, ImageTk
 
 class Caja():
     def __init__(self, container, width=100, height=100):
@@ -242,16 +243,64 @@ class Caja():
     @params {String} Nueva cantidad calculada
     @return {Float}
     '''
-    def add_productos_lateral(self, id_producto="", nombre="", componente="", precio="", imagen="", porcion=""):
-        r = 1
-        
-        for i in range(99):
-            b = Button(self.frame_barra, text=f"Botón {i}", height=15)
-            if i % 2 == 0:
-                c=1
-                r=r+1
-            else:
-                c=2
+    def add_productos_lateral(self, product_list=[]):
+        row = 1
+        self.frame_list = []
+        self.images_list = []
 
-            b.grid(row=r, column=c, sticky="NSEW", padx=5, pady=3)
-            self.add_mousevent(b, self.canvas_barra)
+        for i in range(10):
+
+            nombre_producto = "PARACETAMOL"
+            precio_producto = "$ 36.90"
+            url_base = "./Images/Productos/"
+            nombre_imagen = "Aspirina-1.jpg"
+
+            self.frame_list.append(Frame(self.frame_barra))
+
+            if i % 2 == 0:
+                column=1
+                row+=1
+            else:
+                column=2
+            
+            self.frame_list[-1].grid(row=row, column=column, sticky="NSEW", padx=5, pady=3)
+            self.frame_list[-1].grid_propagate(0)
+
+            # Nombre de producto
+            self.l1 = Label(self.frame_list[-1], text=nombre_producto)
+            self.l1.pack(fill=X, expand=TRUE)
+            
+            #imagen de producto
+            self.images_list.append(ImageTk.PhotoImage(Image.open(url_base + nombre_imagen)))
+            self.l2 = Label(self.frame_list[-1], image=self.images_list[-1])
+            self.l2.pack(fill=X, expand=TRUE)
+
+            # Precio de producto
+            self.l3 = Label(self.frame_list[-1], text=precio_producto)
+            self.l3.pack(fill=X, expand=TRUE)
+            
+
+            # Agregamos el evento de la rueda del Mouse a todos los elmentos
+            self.add_mousevent(self.frame_list[-1], self.canvas_barra)
+            self.add_mousevent(self.l1, self.canvas_barra)
+            self.add_mousevent(self.l2, self.canvas_barra)
+            self.add_mousevent(self.l3, self.canvas_barra)
+
+
+
+'''
+Este codigo es para cambiar el tamaño de una imagen
+im = Image.open('Images/Productos/Aspirina.jpg')
+width, height = im.size
+max_size = 200
+
+if height > width:
+    width = int(max_size * width / height)
+    height = max_size
+else:
+    height = int(max_size * height / width)
+    width = max_size
+
+im = im.resize((width, height))
+im.save("Images/Productos/Aspirina-1.jpg")
+'''
