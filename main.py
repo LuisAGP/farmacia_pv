@@ -1,6 +1,6 @@
 import sqlite3
 from sqlite3 import Error
-from db_connection import Connection
+from DB.db_connection import Connection
 from Menu import Menu_Bar
 from Vistas.Vista_Caja import Caja
 from tkinter import *

@@ -1,5 +1,7 @@
-from tkinter import *
+from tkinter import * 
 from PIL import Image, ImageTk
+import sqlite3
+from DB.db_connection import Connection
 
 class Caja():
     def __init__(self, container, width=100, height=100):
@@ -123,6 +125,7 @@ class Caja():
         self.change_total("$ 1,120.00")
         # FIN --------------------------- Total -------------------------------
 
+        self.productos = [] # Variable que contendra los productos después de consultar y llenar la barra lateral
 
 
 
@@ -243,21 +246,22 @@ class Caja():
     @params {String} Nueva cantidad calculada
     @return {Float}
     '''
-    def add_productos_lateral(self, product_list=[]):
+    def add_productos_lateral(self):
         row = 1
+        cont = 0
+
         self.frame_list = []
         self.images_list = []
+        self.productos = self.obtener_productos()
+        
+        for i in self.productos:
+            nombre_producto = f"{i['nombre_producto']} {i['porcion']}{i['tipo_porcion']}"
+            precio_producto = i['precio']
+            nombre_imagen = f'Images/Productos/{i["imagen"]}'
 
-        for i in range(10):
+            self.frame_list.append(Frame(self.frame_barra, bd=1, relief="solid"))
 
-            nombre_producto = "PARACETAMOL"
-            precio_producto = "$ 36.90"
-            url_base = "./Images/Productos/"
-            nombre_imagen = "Aspirina-1.jpg"
-
-            self.frame_list.append(Frame(self.frame_barra))
-
-            if i % 2 == 0:
+            if cont % 2 == 0:
                 column=1
                 row+=1
             else:
@@ -267,18 +271,17 @@ class Caja():
             self.frame_list[-1].grid_propagate(0)
 
             # Nombre de producto
-            self.l1 = Label(self.frame_list[-1], text=nombre_producto)
-            self.l1.pack(fill=X, expand=TRUE)
+            self.l1 = Label(self.frame_list[-1], text=nombre_producto, bg="#198CC9", fg="white", font=("Arial", 16, "bold"), justify=CENTER)
+            self.l1.pack(fill=BOTH, expand=TRUE, ipady=3)
             
-            #imagen de producto
-            self.images_list.append(ImageTk.PhotoImage(Image.open(url_base + nombre_imagen)))
-            self.l2 = Label(self.frame_list[-1], image=self.images_list[-1])
-            self.l2.pack(fill=X, expand=TRUE)
+            # Imagen de producto
+            self.images_list.append(ImageTk.PhotoImage(Image.open(nombre_imagen)))
+            self.l2 = Label(self.frame_list[-1], image=self.images_list[-1], bg="white", height=210)
+            self.l2.pack(fill=BOTH, expand=TRUE)
 
             # Precio de producto
-            self.l3 = Label(self.frame_list[-1], text=precio_producto)
-            self.l3.pack(fill=X, expand=TRUE)
-            
+            self.l3 = Label(self.frame_list[-1], text=precio_producto, font=('Calibri Light', 12), bg="#198CC9", fg="white")
+            self.l3.pack(fill=BOTH, expand=TRUE, ipady=5)
 
             # Agregamos el evento de la rueda del Mouse a todos los elmentos
             self.add_mousevent(self.frame_list[-1], self.canvas_barra)
@@ -286,7 +289,35 @@ class Caja():
             self.add_mousevent(self.l2, self.canvas_barra)
             self.add_mousevent(self.l3, self.canvas_barra)
 
+            # Agregar evento al hacer click izquierdo a un producto de la barra lateral
+            self.l2.bind("<Button-1>", lambda e, producto=i: self.agregar_a_caja(e, producto))
 
+            cont += 1
+
+
+
+    '''
+    Función para obtener los datos de los productos de la base de datos
+    @author Luis GP
+    @return {List}
+    '''
+    def obtener_productos(self):
+        db = Connection()
+        db.create_connection()
+        connect = db.conn
+
+        cur = connect.cursor()
+        cur.execute("SELECT * FROM productos")
+
+        product_list = cur.fetchall()
+        db.close_connection()
+
+        return product_list
+
+    
+
+    def agregar_a_caja(self, event, producto):
+        print(producto['nombre_producto'])
 
 '''
 Este codigo es para cambiar el tamaño de una imagen
