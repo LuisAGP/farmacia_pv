@@ -4,8 +4,7 @@ import sqlite3
 from DB.db_connection import Connection
 
 class Caja():
-    def __init__(self, container, width=100, height=100):
-
+    def __init__(self, container, width=100, height=100):        
         # Tamaños de componenetes dinamicos
         w_30_s = width * 0.3 - 25 # version con scroll
         w_70_s = width * 0.7 - 25 # version con scroll
@@ -126,6 +125,7 @@ class Caja():
         # FIN --------------------------- Total -------------------------------
 
         self.productos = [] # Variable que contendra los productos después de consultar y llenar la barra lateral
+        self.carrito   = [] # Variable que contendra los prodcutos en el carrito
 
 
 
@@ -253,6 +253,10 @@ class Caja():
         self.frame_list = []
         self.images_list = []
         self.productos = self.obtener_productos()
+
+        # Calculamos el maximo espacio para 
+        self.root_barra.update()
+        max_wraplength = (self.get_width(self.root_barra) / 2) - 10
         
         for i in self.productos:
             nombre_producto = f"{i['nombre_producto']} {i['porcion']}{i['tipo_porcion']}"
@@ -271,7 +275,7 @@ class Caja():
             self.frame_list[-1].grid_propagate(0)
 
             # Nombre de producto
-            self.l1 = Label(self.frame_list[-1], text=nombre_producto, bg="#198CC9", fg="white", font=("Arial", 16, "bold"), justify=CENTER)
+            self.l1 = Label(self.frame_list[-1], text=nombre_producto, bg="#198CC9", fg="white", font=("Arial", 16, "bold"), justify=CENTER, wraplength=max_wraplength)
             self.l1.pack(fill=BOTH, expand=TRUE, ipady=3)
             
             # Imagen de producto
@@ -317,7 +321,25 @@ class Caja():
     
 
     def agregar_a_caja(self, event, producto):
-        print(producto['nombre_producto'])
+        # Convertimos el objeto SQLite a diccionario
+        product_dict = dict(zip(producto.keys(), producto[0:]))
+        is_in_list = False
+
+        # Comprobamos si el producto seleccionado ya forma parte del carrito
+        for item in self.carrito:
+            if item['id_producto'] == product_dict['id_producto']:
+                is_in_list = self.carrito.index(item)
+                print(is_in_list)
+        
+        if is_in_list is not False:
+            # incrementamos la cantidad
+            self.carrito[is_in_list]['cantidad'] += 1
+            print(self.carrito)
+
+        else:
+            # lo agregamos a la lista e incrementamos la cantidad a 1
+            self.carrito.append(product_dict)
+            self.carrito[-1]['cantidad'] = 1
 
 '''
 Este codigo es para cambiar el tamaño de una imagen
