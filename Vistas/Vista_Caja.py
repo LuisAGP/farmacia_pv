@@ -11,9 +11,9 @@ class Caja():
         w_30 = width * 0.3 # sin scroll
         w_70 = width * 0.7 # sin scroll
         h_80 = height * 0.8
-        h_77 = height * 0.77
+        h_75 = height * 0.75
         h_20 = height * 0.2
-        h_03 = height * 0.03
+        h_05 = height * 0.05
 
         # INICIO --------------------------- Barra de productos lateral -------------------------------
         self.root_barra = Frame(container)
@@ -44,14 +44,14 @@ class Caja():
         # INICIO --------------------------- Caja -------------------------------
         
         # Encabezados caja ------------------------------------>
-        self.tabla_caja = Frame(container, width=w_70, height=h_03)
+        self.tabla_caja = Frame(container, width=w_70, height=h_05)
         self.tabla_caja.grid(row=1, column=2)
         self.tabla_caja.grid_propagate(0)
 
-        self.desc = Label(self.tabla_caja, text="NOMBRE / COMPONENTE",     justify=CENTER, bg="#878787", fg="white", font=("Candara", 10, "bold"), bd=1, relief="solid")
-        self.cant = Label(self.tabla_caja, text="CANTIDAD",        justify=CENTER, bg="#878787", fg="white", font=("Candara", 10, "bold"), bd=1, relief="solid")
-        self.preu = Label(self.tabla_caja, text="PRECIO UNITARIO", justify=CENTER, bg="#878787", fg="white", font=("Candara", 10, "bold"), bd=1, relief="solid")
-        self.tota = Label(self.tabla_caja, text="TOTAL",           justify=CENTER, bg="#878787", fg="white", font=("Candara", 10, "bold"), bd=1, relief="solid")
+        self.desc = Label(self.tabla_caja, text="NOMBRE / COMPONENTE", justify=CENTER, bg="#198CC9", fg="white", font=("Helvetica", 12, "bold"), bd=1, relief="solid")
+        self.cant = Label(self.tabla_caja, text="CANTIDAD",            justify=CENTER, bg="#198CC9", fg="white", font=("Helvetica", 12, "bold"), bd=1, relief="solid")
+        self.preu = Label(self.tabla_caja, text="PRECIO UNITARIO",     justify=CENTER, bg="#198CC9", fg="white", font=("Helvetica", 12, "bold"), bd=1, relief="solid")
+        self.tota = Label(self.tabla_caja, text="TOTAL",               justify=CENTER, bg="#198CC9", fg="white", font=("Helvetica", 12, "bold"), bd=1, relief="solid")
         
         self.desc.grid(row=1, column=1, pady=0, sticky="NSEW")
         self.cant.grid(row=1, column=2, pady=0, sticky="NSEW")
@@ -73,7 +73,7 @@ class Caja():
         self.main_frame_caja = Frame(self.root_caja)
         self.main_frame_caja.pack(fill=BOTH, expand=TRUE)
 
-        self.canvas_caja = Canvas(self.main_frame_caja, width=w_70_s, height=h_77)
+        self.canvas_caja = Canvas(self.main_frame_caja, width=w_70_s, height=h_75)
         self.canvas_caja.pack(side=LEFT, fill=BOTH, expand=TRUE)
 
         self.scroll_caja = Scrollbar(self.main_frame_caja, orient=VERTICAL, command=self.canvas_caja.yview)
@@ -86,6 +86,11 @@ class Caja():
         self.frame_caja.bind("<Configure>", lambda e: self.configure_event(e, self.canvas_caja))
         self.frame_caja.bind("<MouseWheel>", lambda e: self.on_mousewheel(e, self.canvas_caja))
         self.canvas_caja.create_window((0, 0), window=self.frame_caja, anchor="nw", width=w_70_s)
+
+        self.frame_caja.columnconfigure(1, weight=1)
+        self.frame_caja.columnconfigure(2, weight=2)
+        self.frame_caja.columnconfigure(3, weight=1)
+        self.frame_caja.columnconfigure(4, weight=1)
         # FIN --------------------------- Caja -------------------------------
         
 
@@ -124,8 +129,9 @@ class Caja():
         self.change_total("$ 1,120.00")
         # FIN --------------------------- Total -------------------------------
 
-        self.productos = [] # Variable que contendra los productos después de consultar y llenar la barra lateral
-        self.carrito   = [] # Variable que contendra los prodcutos en el carrito
+        #self.productos = [] # Variable que contendra los productos después de consultar y llenar la barra lateral
+        self.carrito = [] # Variable que contendra los prodcutos en el carrito
+        self.filas   = [] # 
 
 
 
@@ -254,13 +260,13 @@ class Caja():
         self.images_list = []
         self.productos = self.obtener_productos()
 
-        # Calculamos el maximo espacio para 
+        # Calculamos el espacio maximo para el texto en el label
         self.root_barra.update()
         max_wraplength = (self.get_width(self.root_barra) / 2) - 10
         
         for i in self.productos:
             nombre_producto = f"{i['nombre_producto']} {i['porcion']}{i['tipo_porcion']}"
-            precio_producto = i['precio']
+            precio_producto = self.number_format(i['precio'])
             nombre_imagen = f'Images/Productos/{i["imagen"]}'
 
             self.frame_list.append(Frame(self.frame_barra, bd=1, relief="solid"))
@@ -329,17 +335,111 @@ class Caja():
         for item in self.carrito:
             if item['id_producto'] == product_dict['id_producto']:
                 is_in_list = self.carrito.index(item)
-                print(is_in_list)
         
         if is_in_list is not False:
             # incrementamos la cantidad
             self.carrito[is_in_list]['cantidad'] += 1
-            print(self.carrito)
+            
+            nueva_cantidad = self.carrito[is_in_list]['cantidad']
+            nuevo_total = float(self.carrito[is_in_list]['precio']) * float(nueva_cantidad)
+
+            self.carrito[is_in_list]['total'] = nuevo_total
+            
+            nuevo_total = self.number_format(nuevo_total)
+            
+            self.filas[is_in_list]['total'].set(nuevo_total)
+            self.filas[is_in_list]['cantidad'].set(nueva_cantidad)
+            
 
         else:
             # lo agregamos a la lista e incrementamos la cantidad a 1
             self.carrito.append(product_dict)
             self.carrito[-1]['cantidad'] = 1
+
+            # ------------- Colocamos los productos en el carrito -------------------
+            nombre   = StringVar()
+            precio   = StringVar()
+            cantidad = StringVar()
+            total    = StringVar()
+
+            nombre.set(f"{self.carrito[-1]['nombre_producto']}\n{self.carrito[-1]['componente']}")
+            precio.set(self.number_format(self.carrito[-1]['precio']))
+            cantidad.set("1")
+            total.set(self.number_format(self.carrito[-1]['precio']))
+
+            fila = {
+                'id_producto': self.carrito[-1]['id_producto'],
+                'nombre'     : nombre,
+                'precio'     : precio,
+                'cantidad'   : cantidad,
+                'total'      : total
+            }
+
+            self.filas.append(fila)
+
+
+            # Calculamos el espacio maximo para el texto en el label
+            self.root_caja.update()
+            width_column = self.get_width(self.root_caja) / 6
+            w_2 = int(width_column * 2 - 10)
+            w_1 = int(width_column)
+            h = 50
+
+            r = len(self.carrito) # Fila
+
+            # Columna 1
+            c1 = Frame(self.frame_caja, width=w_2, height=h)
+            c1.grid(row=r, column=1, pady=0, padx=0, sticky="NSEW")
+            c1.grid_propagate(0)
+            c1.columnconfigure(1, weight=1)
+            c1.rowconfigure(1, weight=1)
+
+            desc = Label(c1, textvariable=nombre,   justify=LEFT,   bg="#D6DFF5", fg="#A6A6A6", font=("Helvetica", 9, "bold"), anchor="w", wraplength=w_2)
+            desc.grid(row=1, column=1, ipady=1, sticky="NSEW")
+
+            
+
+
+            # Columna 2
+            c2 = Frame(self.frame_caja, width=w_2, height=h)
+            c2.grid(row=r, column=2, pady=0, padx=0, sticky="NSEW")
+            c2.grid_propagate(0)
+            c2.columnconfigure(1, weight=1)
+            c2.rowconfigure(1, weight=1)
+            
+            cant = Label(c2, textvariable=cantidad, justify=CENTER, bg="#D6DFF5", fg="#A6A6A6", font=("Helvetica", 9, "bold"))
+            cant.grid(row=1, column=1, pady=0, sticky="NSEW")
+            
+            
+
+
+            # Columna 3
+            c3 = Frame(self.frame_caja, width=w_1, height=h)
+            c3.grid(row=r, column=3, pady=0, padx=0, sticky="NSEW")
+            c3.grid_propagate(0)
+            c3.columnconfigure(1, weight=1)
+            c3.rowconfigure(1, weight=1)
+
+            preu = Label(c3, textvariable=precio,   justify=CENTER, bg="#D6DFF5", fg="#A6A6A6", font=("Helvetica", 9, "bold"))
+            preu.grid(row=1, column=1, pady=0, sticky="NSEW")
+
+
+
+
+            # Columna 4
+            c4 = Frame(self.frame_caja, width=w_1, height=h)
+            c4.grid(row=r, column=4, pady=0, padx=0, sticky="NSEW")
+            c4.grid_propagate(0)
+            c4.columnconfigure(1, weight=1)
+            c4.rowconfigure(1, weight=1)
+            
+            tota = Label(c4, textvariable=total,    justify=CENTER, bg="#D6DFF5", fg="#7CBE7E", font=("Helvetica", 9, "bold"))
+            tota.grid(row=1, column=1, pady=0, sticky="NSEW")
+
+    
+
+    def number_format(self, numero):
+        return "$ {:0.2f}".format(numero)
 
 '''
 Este codigo es para cambiar el tamaño de una imagen
