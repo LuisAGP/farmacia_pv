@@ -91,6 +91,11 @@ class Caja():
         self.frame_caja.columnconfigure(2, weight=2)
         self.frame_caja.columnconfigure(3, weight=1)
         self.frame_caja.columnconfigure(4, weight=1)
+
+        # Variables usadas en la caja
+        self.carrito       = [] # Variable que contendra los prodcutos en el carrito
+        self.filas         = [] # lista para almacenar los componentes de cada fila de productos en la caja
+        self.btn_menos_mas = [] # Lista para almacenar los botones de control de cada fila
         # FIN --------------------------- Caja -------------------------------
         
 
@@ -126,12 +131,7 @@ class Caja():
         self.entry_total = Entry(self.total, justify=CENTER, state="readonly", font=("Helvetica", 14))
         self.entry_total.grid(row=1, column=2, pady=(40, 0), ipady=2)
 
-        self.change_total("$ 1,120.00")
         # FIN --------------------------- Total -------------------------------
-
-        #self.productos = [] # Variable que contendra los productos después de consultar y llenar la barra lateral
-        self.carrito = [] # Variable que contendra los prodcutos en el carrito
-        self.filas   = [] # 
 
 
 
@@ -234,23 +234,11 @@ class Caja():
 
 
 
-    '''
-    Función para mostar el total $ de los productos en caja
-    @ahutor Luis GP
-    @params {String} Nueva cantidad calculada
-    @return {Float}
-    '''
-    def change_total(self, txt):
-        self.entry_total.config(state=NORMAL)
-        self.entry_total.insert(0, txt)
-        self.entry_total.config(state="readonly")
 
 
     '''
     Función agregar los productos disponibles al panel izquierdo de la caja
     @ahutor Luis GP
-    @params {String} Nueva cantidad calculada
-    @return {Float}
     '''
     def add_productos_lateral(self):
         row = 1
@@ -258,7 +246,7 @@ class Caja():
 
         self.frame_list = []
         self.images_list = []
-        self.productos = self.obtener_productos()
+        self.productos = self.obtener_productos() # Consulta de productos a la base de datos
 
         # Calculamos el espacio maximo para el texto en el label
         self.root_barra.update()
@@ -281,16 +269,16 @@ class Caja():
             self.frame_list[-1].grid_propagate(0)
 
             # Nombre de producto
-            self.l1 = Label(self.frame_list[-1], text=nombre_producto, bg="#198CC9", fg="white", font=("Arial", 16, "bold"), justify=CENTER, wraplength=max_wraplength)
+            self.l1 = Label(self.frame_list[-1], text=nombre_producto, bg="#198CC9", fg="white", font=("Arial", 16, "bold"), justify=CENTER, wraplength=max_wraplength, cursor="hand2")
             self.l1.pack(fill=BOTH, expand=TRUE, ipady=3)
             
             # Imagen de producto
             self.images_list.append(ImageTk.PhotoImage(Image.open(nombre_imagen)))
-            self.l2 = Label(self.frame_list[-1], image=self.images_list[-1], bg="white", height=210)
+            self.l2 = Label(self.frame_list[-1], image=self.images_list[-1], bg="white", height=210, cursor="hand2")
             self.l2.pack(fill=BOTH, expand=TRUE)
 
             # Precio de producto
-            self.l3 = Label(self.frame_list[-1], text=precio_producto, font=('Calibri Light', 12), bg="#198CC9", fg="white")
+            self.l3 = Label(self.frame_list[-1], text=precio_producto, font=('Calibri Light', 12), bg="#198CC9", fg="white", cursor="hand2")
             self.l3.pack(fill=BOTH, expand=TRUE, ipady=5)
 
             # Agregamos el evento de la rueda del Mouse a todos los elmentos
@@ -299,8 +287,10 @@ class Caja():
             self.add_mousevent(self.l2, self.canvas_barra)
             self.add_mousevent(self.l3, self.canvas_barra)
 
-            # Agregar evento al hacer click izquierdo a un producto de la barra lateral
+            # Agregar evento al hacer click a un producto de la barra lateral
+            self.l1.bind("<Button-1>", lambda e, producto=i: self.agregar_a_caja(e, producto))
             self.l2.bind("<Button-1>", lambda e, producto=i: self.agregar_a_caja(e, producto))
+            self.l3.bind("<Button-1>", lambda e, producto=i: self.agregar_a_caja(e, producto))
 
             cont += 1
 
@@ -325,7 +315,12 @@ class Caja():
         return product_list
 
     
-
+    '''
+    Método para agregar o incrementar un producto al carrito
+    @author Luis GP
+    @param {Event} evento de click
+    @param {Dict} Diccionario SQLite del producto
+    '''
     def agregar_a_caja(self, event, producto):
         # Convertimos el objeto SQLite a diccionario
         product_dict = dict(zip(producto.keys(), producto[0:]))
@@ -350,7 +345,6 @@ class Caja():
             self.filas[is_in_list]['total'].set(nuevo_total)
             self.filas[is_in_list]['cantidad'].set(nueva_cantidad)
             
-
         else:
             # lo agregamos a la lista e incrementamos la cantidad a 1
             self.carrito.append(product_dict)
@@ -383,7 +377,7 @@ class Caja():
             width_column = self.get_width(self.root_caja) / 6
             w_2 = int(width_column * 2 - 10)
             w_1 = int(width_column)
-            h = 50
+            h = 60
 
             r = len(self.carrito) # Fila
 
@@ -401,16 +395,25 @@ class Caja():
 
 
             # Columna 2
-            c2 = Frame(self.frame_caja, width=w_2, height=h)
+            c2 = Frame(self.frame_caja, width=w_2, height=h, bg="#D6DFF5")
             c2.grid(row=r, column=2, pady=0, padx=0, sticky="NSEW")
             c2.grid_propagate(0)
             c2.columnconfigure(1, weight=1)
+            c2.columnconfigure(2, weight=1)
+            c2.columnconfigure(3, weight=1)
             c2.rowconfigure(1, weight=1)
             
+            self.btn_menos_mas.append(PhotoImage(file='Images/signo-menos.png'))
+            b1 = Button(c2, image=self.btn_menos_mas[-1], bd=0, bg="#D6DFF5", activebackground="#D6DFF5", cursor="hand2", command= lambda e=event, p=producto: self.quitar_de_caja(e, p))
+            b1.grid(row=1, column=1, padx=(20, 0))
+            
             cant = Label(c2, textvariable=cantidad, justify=CENTER, bg="#D6DFF5", fg="#A6A6A6", font=("Helvetica", 9, "bold"))
-            cant.grid(row=1, column=1, pady=0, sticky="NSEW")
+            cant.grid(row=1, column=2, pady=0, sticky="NSEW")
             
-            
+            self.btn_menos_mas.append(PhotoImage(file='Images/signo-de-mas.png'))
+            b2 = Button(c2, image=self.btn_menos_mas[-1], bd=0, bg="#D6DFF5", activebackground="#D6DFF5", cursor="hand2", command=lambda e=event, p=producto: self.agregar_a_caja(e, p))
+            b2.grid(row=1, column=3, padx=(0, 5))
+
 
 
             # Columna 3
@@ -420,8 +423,8 @@ class Caja():
             c3.columnconfigure(1, weight=1)
             c3.rowconfigure(1, weight=1)
 
-            preu = Label(c3, textvariable=precio,   justify=CENTER, bg="#D6DFF5", fg="#A6A6A6", font=("Helvetica", 9, "bold"))
-            preu.grid(row=1, column=1, pady=0, sticky="NSEW")
+            prec = Label(c3, textvariable=precio,   justify=CENTER, bg="#D6DFF5", fg="#A6A6A6", font=("Helvetica", 9, "bold"))
+            prec.grid(row=1, column=1, pady=0, sticky="NSEW")
 
 
 
@@ -436,10 +439,70 @@ class Caja():
             tota = Label(c4, textvariable=total,    justify=CENTER, bg="#D6DFF5", fg="#7CBE7E", font=("Helvetica", 9, "bold"))
             tota.grid(row=1, column=1, pady=0, sticky="NSEW")
 
+        self.change_total(self.carrito)
+
     
 
+    
+
+
+    def quitar_de_caja(self, event, producto):
+        # Convertimos el objeto SQLite a diccionario
+        product_dict = dict(zip(producto.keys(), producto[0:]))
+        index = False
+
+        # Buscamos la pocision del producto en el carrito
+        for item in self.carrito:
+            if item['id_producto'] == product_dict['id_producto']:
+                index = self.carrito.index(item)
+        
+        if index is not False:
+            # incrementamos la cantidad
+            self.carrito[index]['cantidad'] -= 1
+            
+            nueva_cantidad = self.carrito[index]['cantidad']
+            nuevo_total = float(self.carrito[index]['precio']) * float(nueva_cantidad)
+
+            self.carrito[index]['total'] = nuevo_total
+            
+            nuevo_total = self.number_format(nuevo_total)
+            
+            self.filas[index]['total'].set(nuevo_total)
+            self.filas[index]['cantidad'].set(nueva_cantidad)
+
+
+
+
+    '''
+    Función para mostar el total $ de los productos en caja
+    @ahutor Luis GP
+    @params {String} Nueva cantidad calculada
+    @return {Float}
+    '''
+    def change_total(self, carrito):
+        total = 0
+
+        if not carrito:
+            total = 0
+        else:
+            for item in carrito:
+                total += float(item['cantidad']) * float(item['precio'])
+        
+        total = self.number_format(total)
+        self.entry_total.config(state=NORMAL)
+        self.entry_total.delete(0, 'end')
+        self.entry_total.insert(0, total)
+        self.entry_total.config(state="readonly")
+
+    
+    '''
+    Método para dar formato de dinero a una cantidad
+    @author Luis GP
+    @param {List} lista del carrito
+    @return {String} formato 1,000.00
+    '''
     def number_format(self, numero):
-        return "$ {:0.2f}".format(numero)
+        return "$ {:,.2f}".format(numero)
 
 '''
 Este codigo es para cambiar el tamaño de una imagen
