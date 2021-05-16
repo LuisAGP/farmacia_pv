@@ -88,9 +88,6 @@ class Caja():
         self.canvas_caja.create_window((0, 0), window=self.frame_caja, anchor="nw", width=w_70_s)
 
         self.frame_caja.columnconfigure(1, weight=1)
-        self.frame_caja.columnconfigure(2, weight=2)
-        self.frame_caja.columnconfigure(3, weight=1)
-        self.frame_caja.columnconfigure(4, weight=1)
 
         # Variables usadas en la caja
         self.carrito       = [] # Variable que contendra los prodcutos en el carrito
@@ -361,7 +358,17 @@ class Caja():
             cantidad.set("1")
             total.set(self.number_format(self.carrito[-1]['precio']))
 
+            r = len(self.carrito) # Fila
+
+            # Calculamos el espacio maximo para el texto en el label
+            self.root_caja.update()
+            width_column = self.get_width(self.root_caja) / 6
+            w_2 = int(width_column * 2 - 10)
+            w_1 = int(width_column)
+            h = 60
+
             fila = {
+                'frow'       : Frame(self.frame_caja, height=h, bg="#5F5F5F"),
                 'id_producto': self.carrito[-1]['id_producto'],
                 'nombre'     : nombre,
                 'precio'     : precio,
@@ -371,19 +378,17 @@ class Caja():
 
             self.filas.append(fila)
 
+            self.filas[-1]['frow'].grid(row=r, column=1, sticky="NSEW", ipady=1)
+            self.filas[-1]['frow'].grid_propagate(0)
+            self.filas[-1]['frow'].columnconfigure(1, weight=1)
+            self.filas[-1]['frow'].columnconfigure(2, weight=2)
+            self.filas[-1]['frow'].columnconfigure(3, weight=1)
+            self.filas[-1]['frow'].columnconfigure(4, weight=1)
 
-            # Calculamos el espacio maximo para el texto en el label
-            self.root_caja.update()
-            width_column = self.get_width(self.root_caja) / 6
-            w_2 = int(width_column * 2 - 10)
-            w_1 = int(width_column)
-            h = 60
-
-            r = len(self.carrito) # Fila
 
             # Columna 1
-            c1 = Frame(self.frame_caja, width=w_2, height=h)
-            c1.grid(row=r, column=1, pady=0, padx=0, sticky="NSEW")
+            c1 = Frame(self.filas[-1]['frow'], width=w_2)
+            c1.grid(row=1, column=1, pady=0, padx=0, sticky="NSEW")
             c1.grid_propagate(0)
             c1.columnconfigure(1, weight=1)
             c1.rowconfigure(1, weight=1)
@@ -395,8 +400,8 @@ class Caja():
 
 
             # Columna 2
-            c2 = Frame(self.frame_caja, width=w_2, height=h, bg="#D6DFF5")
-            c2.grid(row=r, column=2, pady=0, padx=0, sticky="NSEW")
+            c2 = Frame(self.filas[-1]['frow'], width=w_2, bg="#D6DFF5")
+            c2.grid(row=1, column=2, pady=0, padx=0, sticky="NSEW")
             c2.grid_propagate(0)
             c2.columnconfigure(1, weight=1)
             c2.columnconfigure(2, weight=1)
@@ -404,7 +409,7 @@ class Caja():
             c2.rowconfigure(1, weight=1)
             
             self.btn_menos_mas.append(PhotoImage(file='Images/signo-menos.png'))
-            b1 = Button(c2, image=self.btn_menos_mas[-1], bd=0, bg="#D6DFF5", activebackground="#D6DFF5", cursor="hand2", command= lambda e=event, p=producto: self.quitar_de_caja(e, p))
+            b1 = Button(c2, image=self.btn_menos_mas[-1], bd=0, bg="#D6DFF5", activebackground="#D6DFF5", cursor="hand2", command= lambda e=event, p=producto, r=self.filas[-1]['frow']: self.quitar_de_caja(e, p, r))
             b1.grid(row=1, column=1, padx=(20, 0))
             
             cant = Label(c2, textvariable=cantidad, justify=CENTER, bg="#D6DFF5", fg="#A6A6A6", font=("Helvetica", 9, "bold"))
@@ -417,8 +422,8 @@ class Caja():
 
 
             # Columna 3
-            c3 = Frame(self.frame_caja, width=w_1, height=h)
-            c3.grid(row=r, column=3, pady=0, padx=0, sticky="NSEW")
+            c3 = Frame(self.filas[-1]['frow'], width=w_1)
+            c3.grid(row=1, column=3, pady=0, padx=0, sticky="NSEW")
             c3.grid_propagate(0)
             c3.columnconfigure(1, weight=1)
             c3.rowconfigure(1, weight=1)
@@ -430,8 +435,8 @@ class Caja():
 
 
             # Columna 4
-            c4 = Frame(self.frame_caja, width=w_1, height=h)
-            c4.grid(row=r, column=4, pady=0, padx=0, sticky="NSEW")
+            c4 = Frame(self.filas[-1]['frow'], width=w_1, height=h)
+            c4.grid(row=1, column=4, pady=0, padx=0, sticky="NSEW")
             c4.grid_propagate(0)
             c4.columnconfigure(1, weight=1)
             c4.rowconfigure(1, weight=1)
@@ -446,7 +451,7 @@ class Caja():
     
 
 
-    def quitar_de_caja(self, event, producto):
+    def quitar_de_caja(self, event, producto, fila):
         # Convertimos el objeto SQLite a diccionario
         product_dict = dict(zip(producto.keys(), producto[0:]))
         index = False
@@ -470,6 +475,13 @@ class Caja():
             self.filas[index]['total'].set(nuevo_total)
             self.filas[index]['cantidad'].set(nueva_cantidad)
 
+            self.change_total(self.carrito)
+
+            if int(self.carrito[index]['cantidad']) <= 0:
+                self.carrito.pop(index)
+                self.filas.pop(index)
+                fila.destroy()
+                print(self.carrito, self.filas)
 
 
 
