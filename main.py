@@ -9,7 +9,8 @@ from tkinter import *
 def main():
     # Configuracion inicial
     root = Tk()
-    root.wm_state("zoomed")
+    #root.vm_state("zoomed")
+    root.attributes('-zoomed', True)
     root.update()
     root.columnconfigure(0, weight=0)
     root.rowconfigure(0, weight=0)
