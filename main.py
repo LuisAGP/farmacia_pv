@@ -4,13 +4,19 @@ from DB.db_connection import Connection
 from Menu import Menu_Bar
 from Vistas.Vista_Caja import Caja
 from tkinter import *
+import platform
 
 # Este es el principal archivo del proyecto
 def main():
     # Configuracion inicial
     root = Tk()
-    #root.vm_state("zoomed")
-    root.attributes('-zoomed', True)
+    if platform.system() == "Windows":
+        root.state("zoomed")
+    elif platform.system() == "Linux":
+        root.attributes('-zoomed', True)
+    else:
+        print("No se pudo ejecutar el programa en tu sistema operativo")
+        exit()
     root.update()
     root.columnconfigure(0, weight=0)
     root.rowconfigure(0, weight=0)
