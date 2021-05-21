@@ -2,9 +2,13 @@ from tkinter import *
 from PIL import Image, ImageTk
 import sqlite3
 from DB.db_connection import Connection
+from modal.Modal import Confirm
 
 class Caja():
-    def __init__(self, container, width=100, height=100):        
+    def __init__(self, container, width=100, height=100): 
+        # Parent Frame
+        self.parent = container       
+        
         # Tamaños de componenetes dinamicos
         w_30_s = width * 0.3 - 25 # version con scroll
         w_70_s = width * 0.7 - 25 # version con scroll
@@ -107,7 +111,7 @@ class Caja():
 
         self.pay_button = Button(self.control, image=self.pagar_img, text="Pagar", bg="#ABD7F5", bd=0, cursor='hand2')
         self.pay_button.grid(row=1, column=1)
-        self.delete_button = Button(self.control, image=self.cancel_img, text="Eliminar productos", bd=0, border=0, cursor='hand2')
+        self.delete_button = Button(self.control, image=self.cancel_img, text="Eliminar productos", bd=0, border=0, cursor='hand2', command=self.cancelar_compra)
         self.delete_button.grid(row=1, column=2)
 
         pdx = int(w_30 / 2) - self.get_width(self.pay_button) - 10
@@ -236,6 +240,7 @@ class Caja():
     '''
     Función agregar los productos disponibles al panel izquierdo de la caja
     @ahutor Luis GP
+    @return {None}
     '''
     def add_productos_lateral(self):
         row = 1
@@ -312,6 +317,9 @@ class Caja():
         return product_list
 
     
+
+
+
     '''
     Método para agregar o incrementar un producto al carrito
     @author Luis GP
@@ -358,15 +366,14 @@ class Caja():
             cantidad.set("1")
             total.set(self.number_format(self.carrito[-1]['precio']))
 
-            r = len(self.carrito) # Fila
-
             # Calculamos el espacio maximo para el texto en el label
             self.root_caja.update()
             width_column = self.get_width(self.root_caja) / 6
             w_2 = int(width_column * 2 - 10)
             w_1 = int(width_column)
             h = 60
-
+            
+            # Diccionario que conforma una fila en el carrito
             fila = {
                 'frow'       : Frame(self.frame_caja, height=h, bg="#5F5F5F"),
                 'id_producto': self.carrito[-1]['id_producto'],
@@ -376,7 +383,10 @@ class Caja():
                 'total'      : total
             }
 
+            # Agregamos el frame a la lista de filas
             self.filas.append(fila)
+
+            r = len(self.carrito) # Fila
 
             self.filas[-1]['frow'].grid(row=r, column=1, sticky="NSEW", ipady=1)
             self.filas[-1]['frow'].grid_propagate(0)
@@ -450,7 +460,14 @@ class Caja():
 
     
 
-
+    '''
+    Método para disminuir la cantidad de producto en el carrito
+    @author Luis GP
+    @param1 {Event}
+    @param2 {SQLite Object} producto seleccionado
+    @param3 {List} lista de widgets que conforman la fila en el carrito
+    @return {None}
+    '''
     def quitar_de_caja(self, event, producto, fila):
         # Convertimos el objeto SQLite a diccionario
         product_dict = dict(zip(producto.keys(), producto[0:]))
@@ -481,7 +498,24 @@ class Caja():
                 self.carrito.pop(index)
                 self.filas.pop(index)
                 fila.destroy()
-                print(self.carrito, self.filas)
+                self.reorganizar_carrito()
+
+
+
+
+
+    '''
+    Método para reacomodar las filas del carrito
+    @author Luis GP
+    @return {None}
+    '''    
+    def reorganizar_carrito(self):
+        fila = 1
+        for item in self.filas:
+            item['frow'].grid(row=fila, column=1, sticky="NSEW", ipady=1)
+            fila += 1
+
+
 
 
 
@@ -491,7 +525,7 @@ class Caja():
     @params {String} Nueva cantidad calculada
     @return {Float}
     '''
-    def change_total(self, carrito):
+    def change_total(self, carrito=[]):
         total = 0
 
         if not carrito:
@@ -507,6 +541,9 @@ class Caja():
         self.entry_total.config(state="readonly")
 
     
+
+
+
     '''
     Método para dar formato de dinero a una cantidad
     @author Luis GP
@@ -515,6 +552,25 @@ class Caja():
     '''
     def number_format(self, numero):
         return "$ {:,.2f}".format(numero)
+
+
+
+    '''
+    Función para limpiar el carrito
+    @author Luis GP
+    @return {None}
+    '''
+    def cancelar_compra(self, confirm=False):
+        if confirm:
+            for item in self.filas:
+                item['frow'].destroy()
+            
+            self.carrito = []
+            self.filas   = []
+            self.change_total()
+        elif len(self.carrito) > 0:
+            msg = "¿Estas seguro que quieres eliminar el carrito?"
+            Confirm(self.parent, msg=msg, funcionOk=lambda param=True: self.cancelar_compra(param))
 
 '''
 Este codigo es para cambiar el tamaño de una imagen
