@@ -2,11 +2,12 @@ from tkinter import *
 from PIL import Image, ImageTk
 import sqlite3
 from DB.db_connection import Connection
-from modal.Modal import Confirm
+from modal.Modal import Confirm, Pay_Modal
 
 class Caja():
     def __init__(self, container, width=100, height=100): 
         # Parent Frame
+        container.title("CAJA")
         self.parent = container       
         
         # Tamaños de componenetes dinamicos
@@ -109,7 +110,7 @@ class Caja():
         self.pagar_img = PhotoImage(file="Images/pagar.png")
         self.cancel_img = PhotoImage(file="Images/cancelar.png")
 
-        self.pay_button = Button(self.control, image=self.pagar_img, text="Pagar", bg="#ABD7F5", bd=0, cursor='hand2')
+        self.pay_button = Button(self.control, image=self.pagar_img, text="Pagar", bg="#ABD7F5", bd=0, cursor='hand2', command=self.pagar_carrito)
         self.pay_button.grid(row=1, column=1)
         self.delete_button = Button(self.control, image=self.cancel_img, text="Eliminar productos", bd=0, border=0, cursor='hand2', command=self.cancelar_compra)
         self.delete_button.grid(row=1, column=2)
@@ -571,6 +572,21 @@ class Caja():
         elif len(self.carrito) > 0:
             msg = "¿Estas seguro que quieres eliminar el carrito?"
             Confirm(self.parent, msg=msg, funcionOk=lambda param=True: self.cancelar_compra(param))
+    
+
+
+
+    '''
+    Método para realizar el cobro
+    @author Luis GP
+    @
+    '''
+    def pagar_carrito(self, confirm=False):
+        if confirm:
+            pass
+        else:
+            total = self.entry_total.get()
+            Pay_Modal(self.parent, total)
 
 '''
 Este codigo es para cambiar el tamaño de una imagen
