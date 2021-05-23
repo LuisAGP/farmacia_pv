@@ -1,4 +1,5 @@
 from tkinter import *
+from General.Custom_Widgets import Number_Entry
 import re
 
 '''
@@ -54,7 +55,7 @@ class Confirm:
 class Pay_Modal:
     def __init__(self, parent, total):
         self.top = Toplevel(parent)
-        self.total = self.conver_number(total)
+        self.total = self.solo_num(total)
         width = 350
         height = 400
 
@@ -68,19 +69,26 @@ class Pay_Modal:
         self.top.grid_columnconfigure(2, weight=1)
         self.top.grid_propagate(0)
 
-        Label(self.top, text=f"Total de la compra: {total}", font=('Helvetica', 10, 'bold')).grid(row=1, column=1, columnspan=2, sticky='nwes', pady=15)
+        Label(self.top, text=f"Total de la compra: {total}", font=('Helvetica', 11, 'bold')).grid(row=1, column=1, columnspan=2, sticky='nwes', pady=(20, 50))
         
-        Label(self.top, text="Efectivo:", justify=LEFT, anchor='w').grid(row=2, column=1, sticky='nwes', padx=(20, 0))
+        Label(self.top, text="Efectivo:", justify=RIGHT, anchor='e').grid(row=2, column=1, sticky='nwes', padx=(20, 0), ipady=3)
 
-        self.efectivo = Entry(self.top)
-        self.efectivo.grid(row=2, column=2, sticky='nwes', padx=(0, 20))
+        self.efectivo = Number_Entry(self.top)
+        self.efectivo.grid(row=2, column=2, sticky='nwes', padx=(0, 20), ipady=3)
+
+        self.cancelar = Button(self.top, text="Cancelar")
+        self.cancelar.grid(row=3, column=1, sticky='nwes', padx=20)
+
+        self.pagar = Button(self.top, text="Pagar")
+        self.pagar.grid(row=3, column=2, sticky='nwes', padx=20)
 
 
     
-    def conver_number(self, cantidad):
+    def solo_num(self, cantidad):
         pattern = re.compile(r"[0-9]+?(\.[0-9]+)")
         total = pattern.search(cantidad).group()
         return total
+    
 
 
 
