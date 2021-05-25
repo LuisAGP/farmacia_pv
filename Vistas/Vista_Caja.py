@@ -1,7 +1,6 @@
 from tkinter import * 
 from PIL import Image, ImageTk
-import sqlite3
-from DB.db_connection import Connection
+from DB.db_connection import obtener_productos
 from modal.Modal import Confirm, Pay_Modal
 from General.Utils import number_format
 
@@ -149,6 +148,8 @@ class Caja():
         return canvas.configure(scrollregion=canvas.bbox("all"))
 
 
+
+
     '''
     Evento para que el scroll suba o baje con la ruleta del Mouse
     @author Luis GP
@@ -158,6 +159,8 @@ class Caja():
     def on_mousewheel(self, event, canvas):
         canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
         return "break"
+
+
 
 
 
@@ -172,6 +175,8 @@ class Caja():
 
 
 
+
+
     '''
     ::: NOTA ::: Solo se uso en pruebas
     Función para obtener el width del panel lateral de la barra
@@ -181,6 +186,8 @@ class Caja():
     def get_width_barra(self):
         return self.canvas_barra.winfo_reqwidth()
     
+
+
 
 
     '''
@@ -194,6 +201,8 @@ class Caja():
     
 
 
+
+
     '''
     ::: NOTA ::: Solo se uso en pruebas
     Función para obtener el width del panel "frame_caja"
@@ -202,6 +211,8 @@ class Caja():
     '''
     def get_width_caja(self):
         return self.canvas_caja.winfo_reqwidth()
+
+
 
 
     '''
@@ -215,6 +226,8 @@ class Caja():
 
 
 
+
+
     '''
     Función para obtener el ancho de cualquier componente
     @ahutor Luis GP
@@ -223,6 +236,8 @@ class Caja():
     '''
     def get_width(self, component):
         return component.winfo_reqwidth()
+
+
 
 
 
@@ -250,7 +265,7 @@ class Caja():
 
         self.frame_list = []
         self.images_list = []
-        self.productos = self.obtener_productos() # Consulta de productos a la base de datos
+        self.productos = obtener_productos() # Consulta de productos a la base de datos
 
         # Calculamos el espacio maximo para el texto en el label
         self.root_barra.update()
@@ -299,26 +314,6 @@ class Caja():
             cont += 1
 
 
-
-    '''
-    Función para obtener los datos de los productos de la base de datos
-    @author Luis GP
-    @return {List}
-    '''
-    def obtener_productos(self):
-        db = Connection()
-        db.create_connection()
-        connect = db.conn
-
-        cur = connect.cursor()
-        cur.execute("SELECT * FROM productos")
-
-        product_list = cur.fetchall()
-        db.close_connection()
-
-        return product_list
-
-    
 
 
 
@@ -566,15 +561,14 @@ class Caja():
 
 
     '''
-    Método para realizar el cobro
+    Método que muestra un modal para realizar el cobro de los productos
     @author Luis GP
     @
     '''
     def pagar_carrito(self):
         if self.entry_total.get() != "$ 0.00":
             total = self.entry_total.get()
-            Pay_Modal(self.parent, total, self.carrito)
-
+            Pay_Modal(self.parent, total, self.carrito, lambda confirm=True: self.cancelar_compra(confirm))
 '''
 Este codigo es para cambiar el tamaño de una imagen
 im = Image.open('Images/Productos/Aspirina.jpg')

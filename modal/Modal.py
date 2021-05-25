@@ -59,8 +59,8 @@ class Confirm:
 
 
 class Alert:
-    def __init__(self, parent, title, msg, width=350, height=120, focus=None):
-
+    def __init__(self, parent, title, msg, width=350, height=120, focus=None, funcion=None):
+        self.funcion = funcion
         self.focus = focus
         coor = centrar_modal(width, height, parent)
 
@@ -77,6 +77,8 @@ class Alert:
     
     def aceptar(self):
         self.top.destroy()
+        if self.funcion:
+            self.funcion()
         if self.focus:
             self.focus.grab_set()
 
@@ -86,7 +88,8 @@ class Alert:
 
 
 class Pay_Modal:
-    def __init__(self, parent, total, carrito):
+    def __init__(self, parent, total, carrito, funcion=None):
+        self.funcion = funcion
         self.carrito = carrito
         self.parent = parent
         self.top = Toplevel(parent)
@@ -150,7 +153,7 @@ class Pay_Modal:
             crear_ticket(self.carrito, efectivo, cambio)
 
 
-            Alert(self.parent, "::: ¡ALERTA! :::", f"Cambio: {cambio}", self.width, self.height, self.top)
+            Alert(self.parent, "::: ¡ALERTA! :::", f"Cambio: {cambio}", self.width, self.height, self.top, self.funcion)
         else:
             Alert(self.parent, "::: ¡ALERTA! :::", "El efectivo es insuficiente", self.width, self.height, self.top)
     

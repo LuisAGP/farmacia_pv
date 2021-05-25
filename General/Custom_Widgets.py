@@ -1,6 +1,12 @@
 from tkinter import *
 import re
 
+
+'''
+Entry widget que solo deja escribir numeros reales
+@author Luis GP
+@return {None}
+'''
 class Number_Entry(Entry):
     def __init__(self, *args, **kwargs):
         

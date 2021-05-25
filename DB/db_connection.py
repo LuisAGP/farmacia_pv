@@ -1,6 +1,10 @@
 import sqlite3
 from sqlite3 import Error
 
+'''
+Clase principal de coneccion a la base de datos
+@author Luis GP
+'''
 class Connection():
     def __init__(self):
         self.db_url = "./DB/pyDB.db"
@@ -22,6 +26,40 @@ class Connection():
                 self.conn.close()
 
 
+
+
+
+'''
+Función para obtener los datos de los productos de la base de datos
+@author Luis GP
+@return {List}
+'''
+def obtener_productos():
+    db = Connection()
+    db.create_connection()
+    connect = db.conn
+
+    cur = connect.cursor()
+    cur.execute("SELECT * FROM productos")
+
+    product_list = cur.fetchall()
+    db.close_connection()
+
+    return product_list
+
+
+
+
+
+
+'''
+Función para reflejar una compra en la base de datos
+@author Luis GP
+@param1 {Dict} diccionario con los productos del carrito
+@param2 {Float} pago del cliente
+@param3 {Float} cambio del cliente
+@return {None}
+'''
 def crear_ticket(carrito, pago, cambio):
     db = Connection()
     db.create_connection()
