@@ -3,6 +3,7 @@ from PIL import Image, ImageTk
 import sqlite3
 from DB.db_connection import Connection
 from modal.Modal import Confirm, Pay_Modal
+from General.Utils import number_format
 
 class Caja():
     def __init__(self, container, width=100, height=100): 
@@ -257,7 +258,7 @@ class Caja():
         
         for i in self.productos:
             nombre_producto = f"{i['nombre_producto']} {i['porcion']}{i['tipo_porcion']}"
-            precio_producto = self.number_format(i['precio'])
+            precio_producto = number_format(i['precio'])
             nombre_imagen = f'Images/Productos/{i["imagen"]}'
 
             self.frame_list.append(Frame(self.frame_barra, bd=1, relief="solid"))
@@ -346,7 +347,7 @@ class Caja():
 
             self.carrito[is_in_list]['total'] = nuevo_total
             
-            nuevo_total = self.number_format(nuevo_total)
+            nuevo_total = number_format(nuevo_total)
             
             self.filas[is_in_list]['total'].set(nuevo_total)
             self.filas[is_in_list]['cantidad'].set(nueva_cantidad)
@@ -363,9 +364,9 @@ class Caja():
             total    = StringVar()
 
             nombre.set(f"{self.carrito[-1]['nombre_producto']}\n{self.carrito[-1]['componente']}")
-            precio.set(self.number_format(self.carrito[-1]['precio']))
+            precio.set(number_format(self.carrito[-1]['precio']))
             cantidad.set("1")
-            total.set(self.number_format(self.carrito[-1]['precio']))
+            total.set(number_format(self.carrito[-1]['precio']))
 
             # Calculamos el espacio maximo para el texto en el label
             self.root_caja.update()
@@ -488,7 +489,7 @@ class Caja():
 
             self.carrito[index]['total'] = nuevo_total
             
-            nuevo_total = self.number_format(nuevo_total)
+            nuevo_total = number_format(nuevo_total)
             
             self.filas[index]['total'].set(nuevo_total)
             self.filas[index]['cantidad'].set(nueva_cantidad)
@@ -535,24 +536,12 @@ class Caja():
             for item in carrito:
                 total += float(item['cantidad']) * float(item['precio'])
         
-        total = self.number_format(total)
+        total = number_format(total)
         self.entry_total.config(state=NORMAL)
         self.entry_total.delete(0, 'end')
         self.entry_total.insert(0, total)
         self.entry_total.config(state="readonly")
 
-    
-
-
-
-    '''
-    Método para dar formato de dinero a una cantidad
-    @author Luis GP
-    @param {List} lista del carrito
-    @return {String} formato 1,000.00
-    '''
-    def number_format(self, numero):
-        return "$ {:,.2f}".format(numero)
 
 
 
@@ -581,12 +570,10 @@ class Caja():
     @author Luis GP
     @
     '''
-    def pagar_carrito(self, confirm=False):
-        if confirm:
-            pass
-        else:
+    def pagar_carrito(self):
+        if self.entry_total.get() != "$ 0.00":
             total = self.entry_total.get()
-            Pay_Modal(self.parent, total)
+            Pay_Modal(self.parent, total, self.carrito)
 
 '''
 Este codigo es para cambiar el tamaño de una imagen

@@ -1,5 +1,7 @@
 from tkinter import *
 from General.Custom_Widgets import Number_Entry
+from DB.db_connection import crear_ticket
+from General.Utils import number_format
 import re
 
 '''
@@ -52,18 +54,51 @@ class Confirm:
             self.funcionOk()
 
 
-class Pay_Modal:
-    def __init__(self, parent, total):
-        self.top = Toplevel(parent)
-        self.total = self.solo_num(total)
-        width = 350
-        height = 400
 
+
+
+
+class Alert:
+    def __init__(self, parent, title, msg, width=350, height=120, focus=None):
+
+        self.focus = focus
         coor = centrar_modal(width, height, parent)
 
+        self.top = Toplevel(parent)
         self.top.transient(parent)
         self.top.grab_set()
         self.top.geometry(f"{width}x{height}+{coor['x']}+{coor['y']}")
+        self.top.title(title)
+        Label(self.top, text=msg, font=("Helvetica", 10), wraplength=(width - 15)).pack(fill=BOTH, expand=TRUE, padx=15, pady=5)
+
+        self.aceptar_button = Button(self.top, text="Aceptar", command=self.aceptar, width=10)
+        self.aceptar_button.pack(pady=20)
+
+    
+    def aceptar(self):
+        self.top.destroy()
+        if self.focus:
+            self.focus.grab_set()
+
+
+
+
+
+
+class Pay_Modal:
+    def __init__(self, parent, total, carrito):
+        self.carrito = carrito
+        self.parent = parent
+        self.top = Toplevel(parent)
+        self.total = self.solo_num(total)
+        self.width = 350
+        self.height = 200
+
+        coor = centrar_modal(self.width, self.height, parent)
+
+        self.top.transient(parent)
+        self.top.grab_set()
+        self.top.geometry(f"{self.width}x{self.height}+{coor['x']}+{coor['y']}")
         self.top.title("Pagar compra")
         self.top.grid_columnconfigure(1, weight=1)
         self.top.grid_columnconfigure(2, weight=1)
@@ -76,11 +111,11 @@ class Pay_Modal:
         self.efectivo = Number_Entry(self.top)
         self.efectivo.grid(row=2, column=2, sticky='nwes', padx=(0, 20), ipady=3)
 
-        self.cancelar = Button(self.top, text="Cancelar")
-        self.cancelar.grid(row=3, column=1, sticky='nwes', padx=20)
+        self.cancelar = Button(self.top, text="Cancelar", width=80, command=self.cancelar)
+        self.cancelar.grid(row=3, column=1, padx=20, pady=(30, 0))
 
-        self.pagar = Button(self.top, text="Pagar")
-        self.pagar.grid(row=3, column=2, sticky='nwes', padx=20)
+        self.pagar = Button(self.top, text="Pagar", width=80, command=self.pagar)
+        self.pagar.grid(row=3, column=2, padx=20, pady=(30, 0))
 
 
     
@@ -88,6 +123,36 @@ class Pay_Modal:
         pattern = re.compile(r"[0-9]+?(\.[0-9]+)")
         total = pattern.search(cantidad).group()
         return total
+
+
+
+
+    def cancelar(self):
+        self.top.destroy()
+
+
+
+
+    
+    def pagar(self):
+        total = float(self.total)
+        
+        if self.efectivo.get(): 
+            efectivo = float(self.efectivo.get()) 
+        else: 
+            Alert(self.parent, "::: ¡ALERTA! :::", "El campo efectivo no debe ir vacío", self.width, self.height, self.top)
+            return None
+        
+
+        if efectivo >= total:
+            cambio = number_format(efectivo - total)
+            
+            crear_ticket(self.carrito, efectivo, cambio)
+
+
+            Alert(self.parent, "::: ¡ALERTA! :::", f"Cambio: {cambio}", self.width, self.height, self.top)
+        else:
+            Alert(self.parent, "::: ¡ALERTA! :::", "El efectivo es insuficiente", self.width, self.height, self.top)
     
 
 

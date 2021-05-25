@@ -13,7 +13,7 @@ class Number_Entry(Entry):
             kwargs['validate'] = "key"
         
         if 'validatecommand' not in kwargs:
-            kwargs['validatecommand'] = (self.parent.register(self.es_num), "%S")
+            kwargs['validatecommand'] = (self.parent.register(self.es_num), "%s", "%d")
 
         super().__init__(*args, **kwargs)
 
@@ -24,11 +24,16 @@ class Number_Entry(Entry):
     Método para validar que la entrada sea solo de numeros reales
     @author Luis GP
     @param {String} caracter tecleado
+    @param {int} 1 si es inserción o 0 si es eliminación
     @return {Boolean}
     '''
-    def es_num(self, txt):
-        cadena = f"{self.get()}{txt}"
-        if re.match(r'(^\d+$)|(^\d+?(\.\d*)$)', cadena):
-            return True
+    def es_num(self, txt, code):
+
+        if code == 1:
+            cadena = f"{self.get()}{txt}"
+            if re.match(r'(^\d+$)|(^\d+?(\.\d*)$)', cadena):
+                return True
+            else:
+                return False
         else:
-            return False
+            return True
