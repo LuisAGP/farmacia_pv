@@ -13,7 +13,7 @@ class Number_Entry(Entry):
             kwargs['validate'] = "key"
         
         if 'validatecommand' not in kwargs:
-            kwargs['validatecommand'] = (self.parent.register(self.es_num), "%s", "%d")
+            kwargs['validatecommand'] = (self.parent.register(self.es_num), "%S", "%d")
 
         super().__init__(*args, **kwargs)
 
@@ -28,12 +28,15 @@ class Number_Entry(Entry):
     @return {Boolean}
     '''
     def es_num(self, txt, code):
-
+        
         if code == 1:
+
             cadena = f"{self.get()}{txt}"
             if re.match(r'(^\d+$)|(^\d+?(\.\d*)$)', cadena):
                 return True
             else:
                 return False
+                
         else:
+        
             return True
