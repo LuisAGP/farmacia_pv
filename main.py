@@ -17,6 +17,7 @@ def main():
     else:
         print("No se pudo ejecutar el programa en tu sistema operativo")
         exit()
+        
     root.update()
     root.columnconfigure(0, weight=0)
     root.rowconfigure(0, weight=0)

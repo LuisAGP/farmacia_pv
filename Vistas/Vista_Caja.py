@@ -5,10 +5,10 @@ from modal.Modal import Confirm, Pay_Modal
 from General.Utils import number_format
 
 class Caja():
-    def __init__(self, container, width=100, height=100): 
+    def __init__(self, parent, width=800, height=600): 
         # Parent Frame
-        container.title("CAJA")
-        self.parent = container       
+        parent.title("CAJA")
+        self.parent = parent       
         
         # Tamaños de componenetes dinamicos
         w_30_s = width * 0.3 - 25 # version con scroll
@@ -21,7 +21,7 @@ class Caja():
         h_05 = height * 0.05
 
         # INICIO --------------------------- Barra de productos lateral -------------------------------
-        self.root_barra = Frame(container)
+        self.root_barra = Frame(parent)
         self.root_barra.grid(row=1, column=1, rowspan=2)
         self.root_barra.config(bg="lightblue", relief="groove", bd=3, cursor="")
         
@@ -50,7 +50,7 @@ class Caja():
         # INICIO --------------------------- Caja -------------------------------
         
         # Encabezados caja ------------------------------------>
-        self.tabla_caja = Frame(container, width=w_70, height=h_05)
+        self.tabla_caja = Frame(parent, width=w_70, height=h_05)
         self.tabla_caja.grid(row=1, column=2)
         self.tabla_caja.grid_propagate(0)
 
@@ -72,7 +72,7 @@ class Caja():
         self.tabla_caja.rowconfigure(1, weight=1)
 
         # Panel de caja ------------------------------------------>
-        self.root_caja = Frame(container)
+        self.root_caja = Frame(parent)
         self.root_caja.grid(row=2, column=2)
         self.root_caja.config(bd=1, relief="groove")
 
@@ -103,7 +103,7 @@ class Caja():
         
 
         # INICIO --------------------------- Control -------------------------------
-        self.control = Frame(container, width=w_30, height=h_20)
+        self.control = Frame(parent, width=w_30, height=h_20)
         self.control.grid(row=3, column=1)
         self.control.config(bd=1, relief="groove")
         self.control.grid_propagate(False)
@@ -124,7 +124,7 @@ class Caja():
 
 
         # INICIO --------------------------- Total -------------------------------
-        self.total = Frame(container, width=w_70, height=h_20)
+        self.total = Frame(parent, width=w_70, height=h_20)
         self.total.grid(row=3, column=2)
         self.total.config(bd=1, relief="groove")
         self.total.grid_propagate(False)
