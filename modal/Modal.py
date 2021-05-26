@@ -113,6 +113,7 @@ class Pay_Modal:
 
         self.efectivo = Number_Entry(self.top)
         self.efectivo.grid(row=2, column=2, sticky='nwes', padx=(0, 20), ipady=3)
+        self.efectivo.bind('<Return>', self.pagar)
 
         self.cancelar = Button(self.top, text="Cancelar", width=80, command=self.cancelar)
         self.cancelar.grid(row=3, column=1, padx=20, pady=(30, 0))
@@ -137,7 +138,7 @@ class Pay_Modal:
 
 
     
-    def pagar(self):
+    def pagar(self, event):
         total = float(self.total)
         
         if self.efectivo.get(): 
@@ -151,9 +152,9 @@ class Pay_Modal:
             cambio = number_format(efectivo - total)
             
             crear_ticket(self.carrito, efectivo, cambio)
-
-
-            Alert(self.parent, "::: ¡ALERTA! :::", f"Cambio: {cambio}", self.width, self.height, self.top, self.funcion)
+            self.top.destroy()
+            self.funcion()
+            Alert(self.parent, "::: ¡ALERTA! :::", f"Cambio: {cambio}", self.width, self.height)
         else:
             Alert(self.parent, "::: ¡ALERTA! :::", "El efectivo es insuficiente", self.width, self.height, self.top)
     

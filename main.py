@@ -20,15 +20,7 @@ def main():
     root.update()
     root.columnconfigure(0, weight=0)
     root.rowconfigure(0, weight=0)
-
-    # Alto y Ancho de la ventana principal (Pantalla completa)
-    width = root.winfo_width()
-    height = root.winfo_height() - 25
-
-    # Frame lateral  
-    caja = Caja(root, width=width, height=height)
     
-    caja.add_productos_lateral()
     # Menu
     menu = Menu_Bar(root)
     # registrar_producto()

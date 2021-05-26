@@ -43,6 +43,7 @@ class Caja():
         self.canvas_barra.create_window((0, 0), window=self.frame_barra, anchor="nw", width=w_30_s)
         self.frame_barra.columnconfigure(1, weight=1)
         self.frame_barra.columnconfigure(2, weight=1)
+        self.add_productos_lateral()
         # FIN --------------------------- Barra de productos lateral -------------------------------
 
 
