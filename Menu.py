@@ -1,5 +1,6 @@
 from tkinter import *
 from Vistas.Vista_Caja import Caja
+from Vistas.Vista_Inventario import Inventario
 
 
 class Menu_Bar():
@@ -12,7 +13,8 @@ class Menu_Bar():
         self.crear_menu()
 
         # Iniciamos la vista de caja
-        self.caja()
+        # self.caja()
+        self.inventario()
     
     def crear_menu(self):
         self.root.config(menu=self.menu_bar)
@@ -46,6 +48,9 @@ class Menu_Bar():
         if self.vista_activa != "INVENTARIO":
             self.clear()
             self.vista_activa = "INVENTARIO"
+            width = self.root.winfo_width()
+            height = self.root.winfo_height() - 25
+            Inventario(self.root, width=width, height=height)
 
     
     def clear(self):
