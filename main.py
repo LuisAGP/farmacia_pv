@@ -21,6 +21,9 @@ def main():
     root.update()
     root.columnconfigure(0, weight=0)
     root.rowconfigure(0, weight=0)
+    root.columnconfigure(1, weight=1)
+    root.rowconfigure(1, weight=1)
+    root.grid_propagate(0)
     
     # Menu
     menu = Menu_Bar(root)
