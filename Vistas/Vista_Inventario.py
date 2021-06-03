@@ -1,4 +1,6 @@
 from tkinter import * 
+from DB.db_connection import obtener_productos
+from General.Utils import number_format
 
 class Inventario:
     def __init__(self, parent, width=800, height=600):
@@ -48,12 +50,12 @@ class Inventario:
         self.header.columnconfigure(5, weight=1)
         self.header.rowconfigure(1, weight=1)
 
-        Label(self.header, text="Acción",     justify=CENTER).grid(row=1, column=1, sticky="news", padx=(2, 1), pady=1)
-        Label(self.header, text="Nombre",     justify=CENTER).grid(row=1, column=2, sticky="news", padx=1     , pady=1)
-        Label(self.header, text="Porción",    justify=CENTER).grid(row=1, column=3, sticky="news", padx=1     , pady=1)
-        Label(self.header, text="Precio",     justify=CENTER).grid(row=1, column=4, sticky="news", padx=1     , pady=1)
-        Label(self.header, text="Inventario", justify=CENTER).grid(row=1, column=5, sticky="news", padx=(1, 2), pady=1)
-        Frame(self.header, bg="gray", width=17).grid(row=1, column=6, sticky="news")
+        Label(self.header, text="Acción",     justify=CENTER, font=('Arial', 11, ''), bg="#4D4D4D", fg="white", height=30).grid(row=1, column=1, sticky="news", padx=(2, 1), pady=1)
+        Label(self.header, text="Nombre",     justify=CENTER, font=('Arial', 11, ''), bg="#4D4D4D", fg="white", height=30).grid(row=1, column=2, sticky="news", padx=1     , pady=1)
+        Label(self.header, text="Porción",    justify=CENTER, font=('Arial', 11, ''), bg="#4D4D4D", fg="white", height=30).grid(row=1, column=3, sticky="news", padx=1     , pady=1)
+        Label(self.header, text="Precio",     justify=CENTER, font=('Arial', 11, ''), bg="#4D4D4D", fg="white", height=30).grid(row=1, column=4, sticky="news", padx=1     , pady=1)
+        Label(self.header, text="Inventario", justify=CENTER, font=('Arial', 11, ''), bg="#4D4D4D", fg="white", height=30).grid(row=1, column=5, sticky="news", padx=(1, 2), pady=1)
+        Frame(self.header, bg="#DBDBDB", width=17).grid(row=1, column=6, sticky="news")
         # F-------------->Encabezados de la tabla<----------------------
 
         self.table = Frame(self.root, bg="#AEB6BF")
@@ -76,25 +78,19 @@ class Inventario:
         w = self.canvas.winfo_width()
         h = self.canvas.winfo_height() - 4
 
-        self.window = Frame(self.canvas, bg="#AEB6BF", width=w, height=h)
+        self.window = Frame(self.canvas, bg="#AEB6BF")
         self.window.bind("<Configure>", lambda e: self.configure_event(e, self.canvas))
         self.window.bind("<MouseWheel>", lambda e: self.on_mousewheel(e, self.canvas))
+
+        self.canvas.create_window((0 , 0), window=self.window, anchor="nw", width=w)
 
         self.window.columnconfigure(1, weight=1)
         self.window.columnconfigure(2, weight=1)
         self.window.columnconfigure(3, weight=1)
         self.window.columnconfigure(4, weight=1)
         self.window.columnconfigure(5, weight=1)
-        self.window.grid_propagate(0)
         
-        self.canvas.create_window((0 , 0), window=self.window, anchor="nw")
-        
-        for i in range(100):
-            Label(self.window, text="Acción",     justify=CENTER).grid(row=(int(i) +1), column=1, sticky="news", padx=(2, 1), pady=1)
-            Label(self.window, text="Nombre",     justify=CENTER).grid(row=(int(i) +1), column=2, sticky="news", padx=1     , pady=1)
-            Label(self.window, text="Porción",    justify=CENTER).grid(row=(int(i) +1), column=3, sticky="news", padx=1     , pady=1)
-            Label(self.window, text="Precio",     justify=CENTER).grid(row=(int(i) +1), column=4, sticky="news", padx=1     , pady=1)
-            Label(self.window, text="Inventario", justify=CENTER).grid(row=(int(i) +1), column=5, sticky="news", padx=(1, 2), pady=1)
+        self.productos_inventario()
 
 
         
@@ -135,3 +131,75 @@ class Inventario:
     '''
     def add_mousevent(self, component, canvas):
         component.bind("<MouseWheel>", lambda e: self.on_mousewheel(e, canvas))
+
+    
+
+    def productos_inventario(self):
+        
+        productos  = obtener_productos()
+        self.celda = []
+        self.img   = []
+        cont = 1
+
+        for item in productos:
+
+            # Ejemplo
+            # Label(self.window, text="Acción", justify=CENTER).grid(row=(int(i) +1), column=1, sticky="news", padx=(2, 1), pady=1)
+
+            # I--------------------------------> Columna Acción <--------------------------------
+
+            # Frame de botones
+            self.celda.append(Frame(self.window))
+            self.celda[-1].grid(row=cont, column=1, sticky="news", padx=(2, 1), pady=1)
+
+            # Botón para editar
+            self.img.append(PhotoImage(file='Images/editar.png'))
+            self.boton_editar = Button(self.celda[-1], image=self.img[-1], cursor="hand2")
+            self.boton_editar.grid(row=1, column=1)
+
+            # Botón para eliminar
+            self.img.append(PhotoImage(file="Images/eliminar.png"))
+            self.boton_eliminar = Button(self.celda[-1], image=self.img[-1], cursor="hand2")
+            self.boton_eliminar.grid(row=1, column=2)
+
+            # F--------------------------------> Columna Acción <--------------------------------
+
+
+
+            # I--------------------------------> Columna Nombre <--------------------------------
+
+            self.celda.append(Label(self.window, text=f"{item['nombre_producto']}"))
+            self.celda[-1].grid(row=cont, column=2, sticky="news", padx=1, pady=1)
+
+            # F--------------------------------> Columna Nombre <--------------------------------
+
+
+
+            # I--------------------------------> Columna Porción <-------------------------------
+
+            self.celda.append(Label(self.window, text=f"{item['porcion']} {item['tipo_porcion']}"))
+            self.celda[-1].grid(row=cont, column=3, sticky="news", padx=1, pady=1)
+
+            # F--------------------------------> Columna Porción <-------------------------------
+
+
+
+            # I--------------------------------> Columna Precio <--------------------------------
+
+            precio = number_format(item['precio'])
+            self.celda.append(Label(self.window, text=f"{precio}"))
+            self.celda[-1].grid(row=cont, column=4, sticky="news", padx=1, pady=1)
+
+            # F--------------------------------> Columna Precio <--------------------------------
+
+
+
+            # I------------------------------> Columna Inventario <------------------------------
+
+            self.celda.append(Label(self.window, text=f"{item['inventario_actual']}"))
+            self.celda[-1].grid(row=cont, column=5, sticky="news", padx=(1, 2), pady=1)
+
+            # I------------------------------> Columna Inventario <------------------------------
+
+
+            cont += 1
