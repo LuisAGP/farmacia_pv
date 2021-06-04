@@ -570,7 +570,7 @@ class Caja():
     @
     '''
     def pagar_carrito(self):
-        if self.entry_total.get() != "$ 0.00":
+        if self.entry_total.get() and self.entry_total.get() != "$ 0.00":
             total = self.entry_total.get()
             Pay_Modal(self.parent, total, self.carrito, lambda confirm=True: self.cancelar_compra(confirm))
 '''

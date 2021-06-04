@@ -1,4 +1,5 @@
 from tkinter import *
+from tkinter import ttk
 from General.Custom_Widgets import Number_Entry
 from DB.db_connection import crear_ticket
 from General.Utils import number_format
@@ -92,6 +93,7 @@ class Pay_Modal:
         self.funcion = funcion
         self.carrito = carrito
         self.parent = parent
+        
         self.top = Toplevel(parent)
         self.total = self.solo_num(total)
         self.width = 350
@@ -138,7 +140,7 @@ class Pay_Modal:
 
 
     
-    def pagar(self, event):
+    def pagar(self, event=None):
         total = float(self.total)
         
         if self.efectivo.get(): 
@@ -161,6 +163,49 @@ class Pay_Modal:
 
 
 
+class Nuevo_Producto:
+    def __init__(self, parent, funcion=None):
+        self.funcion = funcion
+        self.parent = parent
+
+        self.top = Toplevel(parent)
+        self.width = 400
+        self.height = 500
+
+        coor = centrar_modal(self.width, self.height, parent)
+        
+        self.top.transient(parent)
+        self.top.grab_set()
+        self.top.geometry(f"{self.width}x{self.height}+{coor['x']}+{coor['y']}")
+        self.top.title("Guardar Producto")
+        self.top.grid_columnconfigure(1, weight=1)
+        self.top.grid_columnconfigure(2, weight=1)
+        self.top.grid_propagate(0)
+
+        Label(self.top, text="Nombre del producto:", anchor=E).grid(row=1, column=1, sticky="news")
+        self.input_name = Entry(self.top)
+        self.input_name.grid(row=1, column=2, sticky="news", padx=(10, 20), pady=15)
+
+        Label(self.top, text="Componente:", anchor=E).grid(row=2, column=1, sticky="news")
+        self.input_comp = Entry(self.top)
+        self.input_comp.grid(row=2, column=2, sticky="news", padx=(10, 20), pady=15)
+
+
+        Label(self.top, text="Porcion:", anchor=E).grid(row=3, column=1, sticky="news")
+        self.input_porcion = Number_Entry(self.top)
+        self.input_porcion.grid(row=3, column=2, sticky="news", padx=(10, 20), pady=15)
+
+        Label(self.top, text="Tipo de porcion:", anchor=E).grid(row=4, column=1, sticky="news")
+        self.input_tipo_porcion = ttk.Combobox(self.top, state="readonly")
+        self.input_tipo_porcion['values'] = ('g', 'mg', 'kg', 'ml', 'l', 'pz', 'oz')
+        self.input_tipo_porcion.current(1)
+        self.input_tipo_porcion.grid(row=4, column=2, sticky="news", padx=(10, 20), pady=15)
+        
+
+
+
+
+
 
 '''
 Función general para colocar los modales al centro del frame padre
@@ -177,8 +222,8 @@ def centrar_modal(w, h, parent):
     #   ( y = Frame_height / 2 )  -  ( modal_height / 2 )
     m_w = w
     m_h = h
-    x = int(( parent.winfo_reqwidth()  ) / 2 - m_w / 2)
-    y = int(( parent.winfo_reqheight() ) / 2 - m_h / 2)
+    x = int(( parent.winfo_width()  ) / 2 - m_w / 2)
+    y = int(( parent.winfo_height() ) / 2 - m_h / 2)
 
     return {'x':x, 'y':y}
 

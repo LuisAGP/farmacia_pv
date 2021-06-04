@@ -35,7 +35,7 @@ class Number_Entry(Entry):
     '''
     def es_num(self, txt, code):
         
-        if code == 1:
+        if int(code) == 1:
 
             cadena = f"{self.get()}{txt}"
             if re.match(r'(^\d+$)|(^\d+?(\.\d*)$)', cadena):
