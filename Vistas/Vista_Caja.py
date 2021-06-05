@@ -573,19 +573,4 @@ class Caja():
         if self.entry_total.get() and self.entry_total.get() != "$ 0.00":
             total = self.entry_total.get()
             Pay_Modal(self.parent, total, self.carrito, lambda confirm=True: self.cancelar_compra(confirm))
-'''
-Este codigo es para cambiar el tamaño de una imagen
-im = Image.open('Images/Productos/Aspirina.jpg')
-width, height = im.size
-max_size = 200
 
-if height > width:
-    width = int(max_size * width / height)
-    height = max_size
-else:
-    height = int(max_size * height / width)
-    width = max_size
-
-im = im.resize((width, height))
-im.save("Images/Productos/Aspirina-1.jpg")
-'''

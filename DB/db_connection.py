@@ -1,5 +1,6 @@
 import sqlite3
 from sqlite3 import Error
+from sqlite3.dbapi2 import connect
 
 '''
 Clase principal de coneccion a la base de datos
@@ -136,5 +137,48 @@ def crear_ticket(carrito, pago, cambio):
 
 
     db.close_connection()
+
+
+
+
+
+def guardar_producto(data):
+    db = Connection()
+    db.create_connection()
+
+    connect = db.conn
+
+    sql = f'''
+    INSERT INTO productos(
+        nombre_producto,
+        componente,
+        porcion,
+        tipo_porcion,
+        codigo,
+        imagen,
+        inventario_actual,
+        precio,
+        requiere_receta
+    )
+    VALUES(
+        '{data['nombre_producto']}',
+        '{data['componente']}',
+        '{data['porcion']}',
+        '{data['tipo_porcion']}',
+        '{data['codigo']}',
+        '{data['imagen']}',
+        '{data['inventario']}',
+        '{data['precio']}',
+        '{data['requiere_receta']}'
+    )
+    '''
+
+    cur = connect.cursor()
+    cur.execute(sql)
+
+    connect.commit()
+
+    db.close_connection()
+
 
 

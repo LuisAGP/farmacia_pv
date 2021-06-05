@@ -153,6 +153,10 @@ class Inventario:
         self.img   = []
         cont = 1
 
+        if self.celda:
+            for item in self.celda:
+                item.destroy()
+
         # Color de celda
         bg_celda = "#F0F0F0"
 
@@ -261,4 +265,4 @@ class Inventario:
 
     def nuevo(self):
         self.parent.update()
-        Nuevo_Producto(self.parent)
+        Nuevo_Producto(self.parent, self.productos_inventario)
