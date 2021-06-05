@@ -43,14 +43,20 @@ class Confirm:
         self.ok_button.pack(fill=X, expand=TRUE, side=RIGHT, padx=(20, 40))
 
 
-    
+    '''
+    Función para cerrar el modal Confirm
+    @author Luis GP
+    '''
     def cancel(self, event=None):
         self.top.destroy()
         if self.funcionCan:
             self.funcionCan()
 
     
-
+    '''
+    Función que ejecuta una función heredada en caso de aceptar en el modal Confirm
+    @author Luis GP
+    '''
     def ok(self, event=None):
         self.top.destroy()
         if self.funcionOk:
@@ -60,7 +66,17 @@ class Confirm:
 
 
 
-
+'''
+Clase para mostrar una alerta en pantalla
+@author Luis GP
+@param1 {tk.Content} 
+@param2 {string} titulo de la alerta
+@param3 {string} mensaje de la alerta
+@param4 {float} ancho de alerta
+@param5 {float} alto de la alerta
+@param6 {tk.TopLevel} modal de donde proviene la alerta, si la alerta es lanzada desde otro modal
+@param7 {function} funcion que se ejecuta al dar clic en el boton aceptar
+'''
 class Alert:
     def __init__(self, parent, title, msg, width=350, height=120, focus=None, funcion=None):
         self.funcion = funcion
@@ -78,6 +94,9 @@ class Alert:
         self.aceptar_button.pack(pady=20)
 
     
+
+
+
     def aceptar(self):
         self.top.destroy()
         if self.funcion:
@@ -89,7 +108,13 @@ class Alert:
 
 
 
-
+'''
+Modal para consolidar una compra en caja
+@author Luis GP
+@param1 {tk.Content} contenedor tk
+@param2 {string} total de la compra
+@param3 {Dict} diccionario con los datos del carrito de compras
+'''
 class Pay_Modal:
     def __init__(self, parent, total, carrito, funcion=None):
         self.funcion = funcion
@@ -126,7 +151,12 @@ class Pay_Modal:
         self.pagar.grid(row=3, column=2, padx=20, pady=(30, 0))
 
 
-    
+    '''
+    Función para extraer numeros de uns cadena y convertirlo en Float
+    @author Luis GP
+    @param1 {string}
+    @return {Float}
+    '''
     def solo_num(self, cantidad):
         pattern = re.compile(r"[0-9]+?(\.[0-9]+)")
         total = pattern.search(cantidad).group()
@@ -137,7 +167,6 @@ class Pay_Modal:
 
     def cancelar(self):
         self.top.destroy()
-
 
 
 
@@ -164,7 +193,12 @@ class Pay_Modal:
     
 
 
-
+'''
+Modal para registrar un nuevo producto en el inventario
+@author Luis GP
+@param1 {tk.Content}
+@param2 {function} Función para ejecutar al darle al boton de guardar
+'''
 class Nuevo_Producto:
     def __init__(self, parent, funcion=None):
         self.funcion = funcion
@@ -351,6 +385,13 @@ class Nuevo_Producto:
 
     
 
+    '''
+    Esta función redimensiona una imagen a maximo 200px de alto o 200px de ancho sin deformar la imagen y sin eliminar la imagen original,
+    la imagen es guardada en la siguiente ruta en la raíz del proyecto: ./Images/Productos/
+    @author Luis GP
+    @param1 {string} ruta de la imagen
+    @param2 {string} nombre con el que se guardara la imagen
+    '''
     def escalar_imagen(self, url, nombre):
         image = Image.open(url)
         width, height = image.size
@@ -371,6 +412,9 @@ class Nuevo_Producto:
 
 '''
 Función general para colocar los modales al centro del frame padre
+::: NOTA :::
+Siempre se hereda un Frame que tenga el tamaño completo de la pantalla para conseguir centrar el modal
+::: NOTA :::
 @author Luis GP
 @param1 {Float} ancho de modal
 @param2 {Float} alto de modal

@@ -10,6 +10,12 @@ import platform
 def main():
     # Configuracion inicial
     root = Tk()
+
+    '''
+    ::: NOTA :::
+    Este proyecto solo es capaz de visualizarse de manera correcta en pantalla completa
+    ::: NOTA :::
+    '''
     if platform.system() == "Windows":
         root.state("zoomed")
     elif platform.system() == "Linux":

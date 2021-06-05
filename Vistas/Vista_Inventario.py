@@ -136,7 +136,7 @@ class Inventario:
 
 
     '''
-    Metodo para agregar evento <MouseWheel> para cualquier elemento que este contenido en un frame con scroll
+    Método para agregar evento <MouseWheel> para cualquier elemento que este contenido en un frame con scroll
     @author Luis GP
     @params {Tk_object}, {Tk_object}->(Canvas donde se encuentra contenido el panel scrollable) 
     @return {function}
@@ -146,6 +146,13 @@ class Inventario:
 
     
 
+
+
+    '''
+    Función para llenar la tabla de inventario con los datos de los productos en la base de datos
+    @author Luis GP
+    @return {None}
+    '''
     def productos_inventario(self):
         
         productos  = obtener_productos()
@@ -171,9 +178,6 @@ class Inventario:
         pd = width_c1 * 0.25
 
         for item in productos:
-
-            # Ejemplo
-            # Label(self.window, text="Acción", justify=CENTER).grid(row=(int(i) +1), column=1, sticky="news", padx=(2, 1), pady=1)
 
             # I--------------------------------> Columna Acción <--------------------------------
 
@@ -262,7 +266,11 @@ class Inventario:
 
     
 
-
+    '''
+    Función que muestra el modal para guardar un producto en pantalla
+    @author Luis GP
+    @return {None}
+    '''
     def nuevo(self):
         self.parent.update()
         Nuevo_Producto(self.parent, self.productos_inventario)
