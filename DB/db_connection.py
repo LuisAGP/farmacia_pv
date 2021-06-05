@@ -14,6 +14,7 @@ class Connection():
     def create_connection(self):
 
         try:
+            
             self.conn = sqlite3.connect(self.db_url)
             self.conn.row_factory = sqlite3.Row
             
