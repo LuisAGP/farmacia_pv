@@ -2,9 +2,21 @@ from tkinter import *
 from DB.db_connection import obtener_productos, elimnar_prodcutos
 from General.Utils import number_format
 from modal.Modal import Nuevo_Producto, Confirm, Alert
+import os
+import sys
 
 class Inventario:
     def __init__(self, parent, width=800, height=600):
+
+       #URL Path 
+        if getattr(sys, 'frozen', False):
+            application_path = application_path = sys._MEIPASS
+        elif __file__:
+            application_path = "./"
+
+        self.url = os.path.join(application_path, "")
+
+
         parent.title("INVENTARIO")
         self.parent = parent
         
@@ -193,7 +205,7 @@ class Inventario:
             self.celda[-1].grid_propagate(0)
 
             # Botón para editar
-            self.img.append(PhotoImage(file='Images/editar.png'))
+            self.img.append(PhotoImage(file=f'{self.url}Images/editar.png'))
             self.boton_editar = Button(
                 self.celda[-1], 
                 image=self.img[-1], 
@@ -206,7 +218,7 @@ class Inventario:
             self.boton_editar.grid(row=1, column=2)
 
             # Botón para eliminar 
-            self.img.append(PhotoImage(file="Images/eliminar.png"))
+            self.img.append(PhotoImage(file=f'{self.url}Images/eliminar.png'))
             self.boton_eliminar = Button(
                 self.celda[-1], 
                 image=self.img[-1], 

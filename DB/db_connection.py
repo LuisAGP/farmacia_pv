@@ -2,6 +2,8 @@ import sqlite3
 from sqlite3 import Error
 from sqlite3.dbapi2 import connect
 from datetime import datetime
+import os
+import sys
 
 '''
 Clase principal de coneccion a la base de datos
@@ -9,7 +11,13 @@ Clase principal de coneccion a la base de datos
 '''
 class Connection():
     def __init__(self):
-        self.db_url = "./DB/pyDB.db"
+
+        if getattr(sys, 'frozen', False):
+            application_path = application_path = sys._MEIPASS
+        elif __file__:
+            application_path = "./"
+
+        self.db_url = os.path.join(application_path, "DB/pyDB.db")
         self.conn = None
 
     def create_connection(self):

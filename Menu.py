@@ -14,8 +14,8 @@ class Menu_Bar():
         self.crear_menu()
 
         # Iniciamos la vista de caja
-        # self.caja()
-        self.inventario()
+        self.caja()
+        # self.inventario()
     
 
 

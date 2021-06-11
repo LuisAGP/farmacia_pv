@@ -3,9 +3,20 @@ from PIL import Image, ImageTk
 from DB.db_connection import obtener_productos
 from modal.Modal import Confirm, Pay_Modal
 from General.Utils import number_format
+import os
+import sys
 
 class Caja():
     def __init__(self, parent, width=800, height=600): 
+
+        # URL Path
+        if getattr(sys, 'frozen', False):
+            application_path = application_path = sys._MEIPASS
+        elif __file__:
+            application_path = "./"
+
+        self.url = os.path.join(application_path, "")
+
         # Parent Frame
         parent.title("CAJA") 
 
@@ -111,8 +122,8 @@ class Caja():
         self.control.config(bd=1, relief="groove")
         self.control.grid_propagate(False)
 
-        self.pagar_img = PhotoImage(file="Images/pagar.png")
-        self.cancel_img = PhotoImage(file="Images/cancelar.png")
+        self.pagar_img = PhotoImage(file=f"{self.url}Images/pagar.png")
+        self.cancel_img = PhotoImage(file=f"{self.url}Images/cancelar.png")
 
         self.pay_button = Button(self.control, image=self.pagar_img, text="Pagar", bg="#ABD7F5", bd=0, cursor='hand2', command=self.pagar_carrito)
         self.pay_button.grid(row=1, column=1)
@@ -278,7 +289,7 @@ class Caja():
         for i in self.productos:
             nombre_producto = f"{i['nombre_producto']} {i['porcion']}{i['tipo_porcion']}"
             precio_producto = number_format(i['precio'])
-            nombre_imagen = f'Images/Productos/{i["imagen"]}'
+            nombre_imagen = f'{self.url}Images/Productos/{i["imagen"]}'
 
             self.frame_list.append(Frame(self.frame_barra, bd=1, relief="solid"))
 
@@ -419,14 +430,14 @@ class Caja():
             c2.columnconfigure(3, weight=1)
             c2.rowconfigure(1, weight=1)
             
-            self.btn_menos_mas.append(PhotoImage(file='Images/signo-menos.png'))
+            self.btn_menos_mas.append(PhotoImage(file=f'{self.url}Images/signo-menos.png'))
             b1 = Button(c2, image=self.btn_menos_mas[-1], bd=0, bg="#D6DFF5", activebackground="#D6DFF5", cursor="hand2", command= lambda e=event, p=producto, r=self.filas[-1]['frow']: self.quitar_de_caja(e, p, r))
             b1.grid(row=1, column=1, padx=(20, 0))
             
             cant = Label(c2, textvariable=cantidad, justify=CENTER, bg="#D6DFF5", fg="#A6A6A6", font=("Helvetica", 9, "bold"))
             cant.grid(row=1, column=2, pady=0, sticky="NSEW")
             
-            self.btn_menos_mas.append(PhotoImage(file='Images/signo-de-mas.png'))
+            self.btn_menos_mas.append(PhotoImage(file=f'{self.url}Images/signo-de-mas.png'))
             b2 = Button(c2, image=self.btn_menos_mas[-1], bd=0, bg="#D6DFF5", activebackground="#D6DFF5", cursor="hand2", command=lambda e=event, p=producto: self.agregar_a_caja(e, p))
             b2.grid(row=1, column=3, padx=(0, 5))
 

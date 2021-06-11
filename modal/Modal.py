@@ -6,6 +6,8 @@ from General.Custom_Widgets import Number_Entry
 from DB.db_connection import crear_ticket, guardar_producto, obtener_productos
 from General.Utils import number_format
 import re
+import os
+import sys
 
 '''
 Clase para mostrar el modal de confirmación
@@ -436,6 +438,14 @@ class Nuevo_Producto:
     @param2 {string} nombre con el que se guardara la imagen
     '''
     def escalar_imagen(self, url, nombre):
+
+        if getattr(sys, 'frozen', False):
+            application_path = application_path = sys._MEIPASS
+        elif __file__:
+            application_path = "./"
+
+        base_url = os.path.join(application_path, "")
+
         image = Image.open(url)
         width, height = image.size
         max_size = 200
@@ -448,7 +458,7 @@ class Nuevo_Producto:
             width = max_size
 
         image = image.resize((width, height))
-        image.save(f"Images/Productos/{nombre}")
+        image.save(f"{base_url}Images/Productos/{nombre}")
 
 
 
