@@ -1,6 +1,7 @@
 import sqlite3
 from sqlite3 import Error
 from sqlite3.dbapi2 import connect
+from datetime import datetime
 
 '''
 Clase principal de coneccion a la base de datos
@@ -36,13 +37,18 @@ Función para obtener los datos de los productos de la base de datos
 @author Luis GP
 @return {List}
 '''
-def obtener_productos():
+def obtener_productos(id=None):
     db = Connection()
     db.create_connection()
     connect = db.conn
 
+    where = ""
+
+    if id:
+        where = f"AND id_producto = {id} LIMIT 1"
+
     cur = connect.cursor()
-    cur.execute("SELECT * FROM productos")
+    cur.execute(f"SELECT * FROM productos WHERE deleted_at IS NULL {where}")
 
     product_list = cur.fetchall()
     db.close_connection()
@@ -149,30 +155,45 @@ def guardar_producto(data):
 
     connect = db.conn
 
-    sql = f'''
-    INSERT INTO productos(
-        nombre_producto,
-        componente,
-        porcion,
-        tipo_porcion,
-        codigo,
-        imagen,
-        inventario_actual,
-        precio,
-        requiere_receta
-    )
-    VALUES(
-        '{data['nombre_producto']}',
-        '{data['componente']}',
-        '{data['porcion']}',
-        '{data['tipo_porcion']}',
-        '{data['codigo']}',
-        '{data['imagen']}',
-        '{data['inventario']}',
-        '{data['precio']}',
-        '{data['requiere_receta']}'
-    )
-    '''
+    if data['id_producto']:
+        sql = f'''
+        UPDATE productos
+            SET nombre_producto = '{data['nombre_producto']}',
+                componente = '{data['componente']}',
+                porcion = '{data['porcion']}',
+                tipo_porcion = '{data['tipo_porcion']}',
+                codigo = '{data['codigo']}',
+                imagen = '{data['imagen']}',
+                inventario_actual = '{data['inventario']}',
+                precio = '{data['precio']}',
+                requiere_receta = '{data['requiere_receta']}'
+            WHERE id_producto = {data['id_producto']}
+        '''
+    else:
+        sql = f'''
+        INSERT INTO productos(
+            nombre_producto,
+            componente,
+            porcion,
+            tipo_porcion,
+            codigo,
+            imagen,
+            inventario_actual,
+            precio,
+            requiere_receta
+        )
+        VALUES(
+            '{data['nombre_producto']}',
+            '{data['componente']}',
+            '{data['porcion']}',
+            '{data['tipo_porcion']}',
+            '{data['codigo']}',
+            '{data['imagen']}',
+            '{data['inventario']}',
+            '{data['precio']}',
+            '{data['requiere_receta']}'
+        )
+        '''
 
     cur = connect.cursor()
     cur.execute(sql)
@@ -182,4 +203,25 @@ def guardar_producto(data):
     db.close_connection()
 
 
+
+def elimnar_prodcutos(id):
+    db = Connection()
+    db.create_connection()
+
+    connect = db.conn
+
+    now = datetime.now()
+
+    sql = f'''
+        UPDATE productos
+            SET deleted_at = '{now}'
+            WHERE id_producto = {id}
+        '''
+
+    cur = connect.cursor()
+    cur.execute(sql)
+
+    connect.commit()
+
+    db.close_connection()
 

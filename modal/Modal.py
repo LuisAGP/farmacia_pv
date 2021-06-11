@@ -3,7 +3,7 @@ from tkinter import ttk
 from tkinter import filedialog as fd
 from PIL import Image, ImageTk
 from General.Custom_Widgets import Number_Entry
-from DB.db_connection import crear_ticket, guardar_producto
+from DB.db_connection import crear_ticket, guardar_producto, obtener_productos
 from General.Utils import number_format
 import re
 
@@ -200,9 +200,10 @@ Modal para registrar un nuevo producto en el inventario
 @param2 {function} Función para ejecutar al darle al boton de guardar
 '''
 class Nuevo_Producto:
-    def __init__(self, parent, funcion=None):
+    def __init__(self, parent, funcion=None, id=None):
         self.funcion = funcion
         self.parent = parent
+        self.id_producto = id
 
         self.top = Toplevel(parent)
         self.width = 400
@@ -275,6 +276,7 @@ class Nuevo_Producto:
 
         self.input_inventario = Number_Entry(self.top)
         self.input_inventario.grid(row=5, column=2, sticky="news", padx=(10, 20), pady=15)
+        self.input_inventario.insert(0, 0)
 
         # F------------------------------------------>Inventario<------------------------------------------
 
@@ -320,6 +322,24 @@ class Nuevo_Producto:
         # F--------------------------------------->Requiere receta<----------------------------------------
 
 
+        # Recuperamos el producto si existe su id
+        if id:
+            producto = obtener_productos(id)[0]
+            tipo_porcion = self.input_tipo_porcion['values'].index(producto['tipo_porcion'])
+
+            self.input_name.insert(0, producto['nombre_producto'])
+            self.input_comp.insert(0, producto['componente'])
+            self.input_porcion.insert(0, producto['porcion'])
+            self.input_tipo_porcion.current(tipo_porcion)
+            self.input_inventario.insert(0, producto['inventario_actual'])
+            self.entry_img.config(state="normal")
+            self.entry_img.insert(0, producto['imagen'])
+            self.entry_img.config(state="readonly")
+            self.input_codigo.insert(0, producto['codigo'])
+            self.input_precio.insert(0, producto['precio'])
+            self.requiere_receta.set(producto['requiere_receta'])
+
+        
         Button(self.top, text="Cancelar", width=8, command=self.cancelar).grid(row=10, column=1, pady=(20, 0))
         Button(self.top, text="Guardar",  width=8, command=self.guardar ).grid(row=10, column=2, pady=(20, 0))
     
@@ -357,14 +377,36 @@ class Nuevo_Producto:
     
 
     def guardar(self):
+        # I----------------------------------------->Validación<-------------------------------------------
+        
+        validacion = {'error': False, 'mensaje': ""}
+        if not self.input_name.get():
+            validacion = {'error': True, 'mensaje': 'El nombre del producto no puede ir vacío'}
+        elif not self.input_porcion.get() or float(self.input_porcion.get()) < 0:
+            validacion = {'error': True, 'mensaje': 'El campo porcion del producto no puede ir vacío ni puede ser menor a 0'}
+        elif not self.input_inventario.get() or float(self.input_inventario.get()) < 0:
+            validacion = {'error': True, 'mensaje': 'El campo inventario no puede ir vacío ni puede ser menor a 0'}
+        elif not self.input_precio.get() or float(self.input_precio.get()) < 0:
+            validacion = {'error': True, 'mensaje': 'El campo precio no puede ir vacío ni puede ser menor a 0'}
+
+        if validacion['error']:
+            Alert(self.parent, "::: ¡ALERTA! :::", validacion['mensaje'], 325, 120, focus=self.top)
+            return None
+
+        # F----------------------------------------->Validación<-------------------------------------------
+        
+
 
         if self.url:
             nombre = self.entry_img.get()
             self.escalar_imagen(self.url, nombre)
+        elif self.id_producto and self.entry_img.get():
+            nombre = self.entry_img.get()
         else:
             nombre = "default.jpg"
         
         data = {
+            'id_producto': self.id_producto,
             'nombre_producto': self.input_name.get(),
             'componente': self.input_comp.get(),
             'porcion': self.input_porcion.get(),
@@ -381,6 +423,7 @@ class Nuevo_Producto:
         self.top.destroy()
         if self.funcion:
             self.funcion()
+            
         Alert(self.parent, "::: ¡ALERTA! :::", f"¡El producto se guardo correctamente!", 250, 200)
 
     

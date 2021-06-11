@@ -27,7 +27,7 @@ class Number_Entry(Entry):
 
 
     '''
-    Método para validar que la entrada sea solo de numeros reales
+    Método para validar que la entrada sean numeros reales positivos o negativos
     @author Luis GP
     @param {String} caracter tecleado
     @param {int} 1 si es inserción o 0 si es eliminación
@@ -38,7 +38,7 @@ class Number_Entry(Entry):
         if int(code) == 1:
 
             cadena = f"{self.get()}{txt}"
-            if re.match(r'(^\d+$)|(^\d+?(\.\d*)$)', cadena):
+            if re.match(r'(^\-?([0-9]+|[0-9]+?(\.[0-9]*))$)|(^\-{1}$)', cadena):
                 return True
             else:
                 return False

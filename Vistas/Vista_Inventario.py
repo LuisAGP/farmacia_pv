@@ -1,7 +1,7 @@
 from tkinter import * 
-from DB.db_connection import obtener_productos
+from DB.db_connection import obtener_productos, elimnar_prodcutos
 from General.Utils import number_format
-from modal.Modal import Nuevo_Producto
+from modal.Modal import Nuevo_Producto, Confirm, Alert
 
 class Inventario:
     def __init__(self, parent, width=800, height=600):
@@ -102,6 +102,8 @@ class Inventario:
         self.window.columnconfigure(4, weight=1)
         self.window.columnconfigure(5, weight=1)
         
+        # Llenamos la tabla del inventario
+        self.celda = []
         self.productos_inventario()
 
 
@@ -156,7 +158,6 @@ class Inventario:
     def productos_inventario(self):
         
         productos  = obtener_productos()
-        self.celda = []
         self.img   = []
         cont = 1
 
@@ -193,12 +194,28 @@ class Inventario:
 
             # Botón para editar
             self.img.append(PhotoImage(file='Images/editar.png'))
-            self.boton_editar = Button(self.celda[-1], image=self.img[-1], cursor="hand2", bg=bg_celda, activebackground=bg_celda, bd=0)
+            self.boton_editar = Button(
+                self.celda[-1], 
+                image=self.img[-1], 
+                cursor="hand2", 
+                bg=bg_celda, 
+                activebackground=bg_celda, 
+                bd=0, 
+                command=lambda id=item['id_producto']: self.editar(id)
+            )
             self.boton_editar.grid(row=1, column=2)
 
-            # Botón para eliminar
+            # Botón para eliminar 
             self.img.append(PhotoImage(file="Images/eliminar.png"))
-            self.boton_eliminar = Button(self.celda[-1], image=self.img[-1], cursor="hand2", bg=bg_celda, activebackground=bg_celda, bd=0)
+            self.boton_eliminar = Button(
+                self.celda[-1], 
+                image=self.img[-1], 
+                cursor="hand2", 
+                bg=bg_celda, 
+                activebackground=bg_celda, 
+                bd=0,
+                command= lambda id=item['id_producto']: self.alerta_eliminar(id)
+            )
             self.boton_eliminar.grid(row=1, column=3)
 
             # F--------------------------------> Columna Acción <--------------------------------
@@ -274,3 +291,23 @@ class Inventario:
     def nuevo(self):
         self.parent.update()
         Nuevo_Producto(self.parent, self.productos_inventario)
+
+    
+
+    def editar(self, id):
+        self.parent.update()
+        Nuevo_Producto(self.parent, self.productos_inventario, id=id)
+
+
+
+
+    def alerta_eliminar(self, id):
+        producto = obtener_productos(id)[0]
+        msg = f"¿Estas seguro que quieres eliminar '{producto['nombre_producto']} {producto['porcion']}{producto['tipo_porcion']}'?"
+        Confirm(self.parent, msg=msg, funcionOk=lambda: self.eliminar_producto(id))
+
+    
+
+    def eliminar_producto(self, id):
+        elimnar_prodcutos(id)
+        Alert(self.parent, "¡Eliminado!", "¡El producto fué eliminado con exito!", 210, 120, funcion=self.productos_inventario)
